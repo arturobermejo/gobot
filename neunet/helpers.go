@@ -18,22 +18,6 @@ func sigmoid(m *mat.Dense) *mat.Dense {
 	return result
 }
 
-func softmax(matrix *mat.Dense) *mat.Dense {
-	var sum float64
-	// Calculate the sum
-	for _, v := range matrix.RawMatrix().Data {
-		sum += math.Exp(v)
-	}
-
-	resultMatrix := mat.NewDense(matrix.RawMatrix().Rows, matrix.RawMatrix().Cols, nil)
-	// Calculate softmax value for each element
-	resultMatrix.Apply(func(i int, j int, v float64) float64 {
-		return math.Exp(v) / sum
-	}, matrix)
-
-	return resultMatrix
-}
-
 func SigmoidOutputDerivative(m *mat.Dense) *mat.Dense {
 	sigmoidDerivative := func(i, j int, v float64) float64 {
 		return v * (1 - v)
