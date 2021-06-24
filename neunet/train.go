@@ -25,14 +25,14 @@ func Train() {
 
 		loss := stat.CrossEntropy(category.RawMatrix().Data, outputEst.RawMatrix().Data)
 
-		dz2 := matrixSubtract(outputEst, category)   // 10x1
-		dw2 := matrixDot(model.hiddenLayer.T(), dz2) // 10x7
+		dz2 := matrixSubtract(outputEst, category)          // 10x1
+		dw2 := matrixDot(model.hiddenLayer.output.T(), dz2) // 10x7
 
-		dz1 := matrixDot(dz2, model.weightsOutput.T())
+		dz1 := matrixDot(dz2, model.outputLayer.weights.T())
 		dw1 := matrixDot(input.T(), dz1) // 35x10
 
-		model.weightsOutput = matrixSubtract(model.weightsOutput, matrixScale(learningRate, dw2))
-		model.weightsHidden = matrixSubtract(model.weightsHidden, matrixScale(learningRate, dw1))
+		model.outputLayer.weights = matrixSubtract(model.outputLayer.weights, matrixScale(learningRate, dw2))
+		model.hiddenLayer.weights = matrixSubtract(model.hiddenLayer.weights, matrixScale(learningRate, dw1))
 
 		fmt.Println(loss)
 	}

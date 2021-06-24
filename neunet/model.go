@@ -11,39 +11,37 @@ type Model struct {
 	hiddenSize int
 	outputSize int
 
-	hiddenLayer   *mat.Dense
-	outputLayer   *mat.Dense
-	weightsHidden *mat.Dense
-	weightsOutput *mat.Dense
+	hiddenLayer *DenseLayer
+	outputLayer *DenseLayer
 }
 
 func NewModel(inputSize, hiddenSize, outputSize int) *Model {
 	return &Model{
-		inputSize:     inputSize,
-		hiddenSize:    hiddenSize,
-		outputSize:    outputSize,
-		weightsHidden: mat.NewDense(inputSize, hiddenSize, randomArray(inputSize*hiddenSize, float64(inputSize))),
-		weightsOutput: mat.NewDense(hiddenSize, outputSize, randomArray(hiddenSize*outputSize, float64(hiddenSize))),
+		inputSize:   inputSize,
+		hiddenSize:  hiddenSize,
+		outputSize:  outputSize,
+		hiddenLayer: NewDenseLayer(inputSize, hiddenSize),
+		outputLayer: NewDenseLayer(hiddenSize, outputSize),
 	}
 }
 
 // Z[L] = W[L]xA[L-1]
 func (m *Model) Forward(input *mat.Dense) *mat.Dense {
-	m.hiddenLayer = matrixDot(input, m.weightsHidden)
-	m.outputLayer = matrixDot(m.hiddenLayer, m.weightsOutput)
-	return softmax(m.outputLayer)
+	m.hiddenLayer.Fordward(input)
+	m.outputLayer.Fordward(m.hiddenLayer.output)
+	return softmax(m.outputLayer.output)
 }
 
 func (m *Model) Save() {
-	h, err := os.Create("data/weights1.model")
+	h, err := os.Create("data/weightsHidden.model")
 	defer h.Close()
 	if err == nil {
-		m.weightsHidden.MarshalBinaryTo(h)
+		m.hiddenLayer.weights.MarshalBinaryTo(h)
 	}
-	o, err := os.Create("data/weights2.model")
+	o, err := os.Create("data/weightsOutput.model")
 	defer o.Close()
 	if err == nil {
-		m.weightsOutput.MarshalBinaryTo(o)
+		m.outputLayer.weights.MarshalBinaryTo(o)
 	}
 }
 
@@ -51,18 +49,13 @@ func (m *Model) Load() {
 	h, err := os.Open("data/weightsHidden.model")
 	defer h.Close()
 	if err == nil {
-		m.weightsHidden.Reset()
-		m.weightsHidden.UnmarshalBinaryFrom(h)
+		m.hiddenLayer.weights.Reset()
+		m.hiddenLayer.weights.UnmarshalBinaryFrom(h)
 	}
 	o, err := os.Open("data/weightsOutput.model")
 	defer o.Close()
 	if err == nil {
-		m.weightsOutput.Reset()
-		m.weightsOutput.UnmarshalBinaryFrom(o)
+		m.outputLayer.weights.Reset()
+		m.outputLayer.weights.UnmarshalBinaryFrom(o)
 	}
-}
-
-// TODO: REMOVE
-func (m *Model) GetWeight() *mat.Dense {
-	return m.weightsHidden
 }
