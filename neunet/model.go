@@ -12,6 +12,7 @@ type Model struct {
 	outputSize int
 
 	hiddenLayer  *LinearLayer
+	reluLayer    *ReLUActivation
 	outputLayer  *LinearLayer
 	softmaxLayer *SoftmaxActivation
 }
@@ -22,6 +23,7 @@ func NewModel(inputSize, hiddenSize, outputSize int) *Model {
 		hiddenSize:   hiddenSize,
 		outputSize:   outputSize,
 		hiddenLayer:  NewLinearLayer(inputSize, hiddenSize),
+		reluLayer:    NewReLUActivation(),
 		outputLayer:  NewLinearLayer(hiddenSize, outputSize),
 		softmaxLayer: NewSoftmaxActivation(),
 	}
@@ -30,7 +32,8 @@ func NewModel(inputSize, hiddenSize, outputSize int) *Model {
 // Z[L] = W[L]xA[L-1]
 func (m *Model) Forward(input *mat.Dense) *mat.Dense {
 	m.hiddenLayer.Fordward(input)
-	m.outputLayer.Fordward(m.hiddenLayer.output)
+	m.reluLayer.Fordward(m.hiddenLayer.output)
+	m.outputLayer.Fordward(m.reluLayer.output)
 	m.softmaxLayer.Fordward(m.outputLayer.output)
 	return m.softmaxLayer.output
 }

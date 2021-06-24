@@ -37,11 +37,30 @@ func (a *SoftmaxActivation) Fordward(inputs *mat.Dense) {
 		sum += math.Exp(v)
 	}
 
-	r := mat.NewDense(inputs.RawMatrix().Rows, inputs.RawMatrix().Cols, nil)
+	m := mat.NewDense(inputs.RawMatrix().Rows, inputs.RawMatrix().Cols, nil)
 
-	r.Apply(func(i int, j int, v float64) float64 {
+	m.Apply(func(i int, j int, v float64) float64 {
 		return math.Exp(v) / sum
 	}, inputs)
 
-	a.output = r
+	a.output = m
+}
+
+type ReLUActivation struct {
+	output *mat.Dense
+}
+
+func NewReLUActivation() *ReLUActivation {
+	return &ReLUActivation{}
+}
+
+func (a *ReLUActivation) Fordward(inputs *mat.Dense) {
+	r, c := inputs.Dims()
+	m := mat.NewDense(r, c, nil)
+
+	m.Apply(func(i int, j int, v float64) float64 {
+		return math.Max(0, v)
+	}, inputs)
+
+	a.output = m
 }

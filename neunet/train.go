@@ -21,8 +21,6 @@ func Train() {
 
 		outputEst := model.Forward(input) // estimated category
 
-		fmt.Println(voca)
-
 		loss := stat.CrossEntropy(category.RawMatrix().Data, outputEst.RawMatrix().Data)
 
 		dz2 := matrixSubtract(outputEst, category)          // 10x1
