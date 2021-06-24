@@ -11,8 +11,8 @@ type Model struct {
 	hiddenSize int
 	outputSize int
 
-	hiddenLayer *DenseLayer
-	outputLayer *DenseLayer
+	hiddenLayer *LinearLayer
+	outputLayer *LinearLayer
 }
 
 func NewModel(inputSize, hiddenSize, outputSize int) *Model {
@@ -20,8 +20,8 @@ func NewModel(inputSize, hiddenSize, outputSize int) *Model {
 		inputSize:   inputSize,
 		hiddenSize:  hiddenSize,
 		outputSize:  outputSize,
-		hiddenLayer: NewDenseLayer(inputSize, hiddenSize),
-		outputLayer: NewDenseLayer(hiddenSize, outputSize),
+		hiddenLayer: NewLinearLayer(inputSize, hiddenSize),
+		outputLayer: NewLinearLayer(hiddenSize, outputSize),
 	}
 }
 
