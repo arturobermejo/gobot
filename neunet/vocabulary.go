@@ -28,29 +28,44 @@ func (v *Vocabulary) GetOutputSize() int {
 }
 
 func (v *Vocabulary) GetOutputVector(output string) *mat.Dense {
-	value := v.outputVocabulary[output]
-	return mat.NewDense(1, 1, []float64{float64(value)})
+	c := mat.NewDense(1, v.GetOutputSize(), nil)
+
+	idx, ok := v.outputVocabulary[output]
+	if ok {
+		c.Set(0, idx-1, 1)
+	}
+
+	return c
 }
 
 func (v *Vocabulary) GetInputVector(message string) *mat.Dense {
 	c := mat.NewDense(1, v.GetInputSize(), nil)
 
-	for _, word := range strings.Split(message, " ") {
+	for _, word := range strings.Split(strings.TrimSuffix(message, "\n"), " ") {
 		word := strings.ToLower(word)
 		idx, ok := v.inputVocabulary[word]
 
 		if ok {
-			c.Set(0, idx, 1)
+			c.Set(0, idx-1, 1)
 		}
 	}
 
 	return c
 }
 
+func (v *Vocabulary) GetOutput(idx int) string {
+	for k, v := range v.outputVocabulary {
+		if v+1 == idx {
+			return k
+		}
+	}
+	return ""
+}
+
 func getVocabulary(data []string) map[string]int {
 	counter := map[string]int{}
 
-	i := 0
+	i := 1
 
 	for _, line := range data {
 		for _, word := range strings.Split(line, " ") {

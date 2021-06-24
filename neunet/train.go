@@ -1,37 +1,41 @@
 package neunet
 
+import (
+	"fmt"
+
+	"gonum.org/v1/gonum/stat"
+)
+
 func Train() {
 	dl := NewDataLoader()
 	inputData, outputData := dl.FromFile("data/messages", "data/categories")
 
 	voca := NewVocabulary(inputData, outputData)
-	model := NewModel(voca.GetInputSize(), 10, 1)
+	model := NewModel(voca.GetInputSize(), 4, voca.GetOutputSize())
 	learningRate := 0.001
 
-	n := len(inputData)
+	n := 2 //len(inputData)
 	for i := 0; i < n; i++ {
-		message := voca.GetInputVector(inputData[i])
+		input := voca.GetInputVector(inputData[i])
 		category := voca.GetOutputVector(outputData[i])
 
-		outputEst := model.Forward(message) // estimated category
+		outputEst := model.Forward(input) // estimated category
 
-		//Output error
-		outputError := matrixSubtract(outputEst, category)
-		outputDelta := matrixMultiply(outputError, SigmoidOutputDerivative(outputEst)) // why?
+		fmt.Println(voca)
 
-		// Backpropagated error
-		hiddelLayerError := matrixDot(outputDelta, model.weights2.T())
-		hiddenLayerDelta := hiddelLayerError
+		loss := stat.CrossEntropy(category.RawMatrix().Data, outputEst.RawMatrix().Data)
 
-		//Update weights
-		model.weights2 = matrixSubtract(
-			model.weights2,
-			matrixScale(learningRate, matrixDot(model.hiddenLayer.T(), outputDelta)))
+		dz2 := matrixSubtract(outputEst, category)   // 10x1
+		dw2 := matrixDot(model.hiddenLayer.T(), dz2) // 10x7
 
-		model.weights1 = matrixSubtract(
-			model.weights1,
-			matrixScale(learningRate, matrixDot(message.T(), hiddenLayerDelta)))
+		dz1 := matrixDot(dz2, model.weightsOutput.T())
+		dw1 := matrixDot(input.T(), dz1) // 35x10
 
-		// fmt.Println(outputEst.At(0, 0), category.At(0, 0))
+		model.weightsOutput = matrixSubtract(model.weightsOutput, matrixScale(learningRate, dw2))
+		model.weightsHidden = matrixSubtract(model.weightsHidden, matrixScale(learningRate, dw1))
+
+		fmt.Println(loss)
 	}
+
+	model.Save()
 }

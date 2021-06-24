@@ -8,14 +8,30 @@ import (
 )
 
 func sigmoid(m *mat.Dense) *mat.Dense {
-	sigmoid := func(i, j int, v float64) float64 {
+	f := func(i, j int, v float64) float64 {
 		return 1 / (1 + math.Exp(-1*v))
 	}
 
 	r, c := m.Dims()
 	result := mat.NewDense(r, c, nil)
-	result.Apply(sigmoid, m)
+	result.Apply(f, m)
 	return result
+}
+
+func softmax(matrix *mat.Dense) *mat.Dense {
+	var sum float64
+	// Calculate the sum
+	for _, v := range matrix.RawMatrix().Data {
+		sum += math.Exp(v)
+	}
+
+	resultMatrix := mat.NewDense(matrix.RawMatrix().Rows, matrix.RawMatrix().Cols, nil)
+	// Calculate softmax value for each element
+	resultMatrix.Apply(func(i int, j int, v float64) float64 {
+		return math.Exp(v) / sum
+	}, matrix)
+
+	return resultMatrix
 }
 
 func SigmoidOutputDerivative(m *mat.Dense) *mat.Dense {
@@ -68,4 +84,11 @@ func randomArray(size int, v float64) (data []float64) {
 		data[i] = dist.Rand()
 	}
 	return
+}
+
+func matrixAdd(m, n mat.Matrix) *mat.Dense {
+	r, c := m.Dims()
+	o := mat.NewDense(r, c, nil)
+	o.Add(m, n)
+	return o
 }
