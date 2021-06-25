@@ -2,8 +2,6 @@ package neunet
 
 import (
 	"fmt"
-
-	"gonum.org/v1/gonum/stat"
 )
 
 func Train() {
@@ -13,26 +11,29 @@ func Train() {
 	voca := NewVocabulary(inputData, outputData)
 	model := NewModel(voca.GetInputSize(), 4, voca.GetOutputSize())
 	learningRate := 0.001
+	epochs := 1000
 
-	n := 2 //len(inputData)
-	for i := 0; i < n; i++ {
-		input := voca.GetInputVector(inputData[i])
-		category := voca.GetOutputVector(outputData[i])
+	criterion := NewCrossEntropy()
 
-		outputEst := model.Forward(input) // estimated category
+	for epoch := 1; epoch <= epochs; epoch++ {
+		input := voca.GetInputMatrix(inputData)
+		output := voca.GetOutputMatrix(outputData)
+		outputPred := model.Forward(input)
 
-		loss := stat.CrossEntropy(category.RawMatrix().Data, outputEst.RawMatrix().Data)
+		loss := criterion.Fordward(output, outputPred)
 
-		dz2 := matrixSubtract(outputEst, category)          // 10x1
-		dw2 := matrixDot(model.hiddenLayer.output.T(), dz2) // 10x7
+		dz2 := matrixSubtract(outputPred, output)
+		dw2 := matrixDot(model.hiddenLayer.output.T(), dz2)
 
 		dz1 := matrixDot(dz2, model.outputLayer.weights.T())
-		dw1 := matrixDot(input.T(), dz1) // 35x10
+		dw1 := matrixDot(input.T(), dz1)
 
 		model.outputLayer.weights = matrixSubtract(model.outputLayer.weights, matrixScale(learningRate, dw2))
 		model.hiddenLayer.weights = matrixSubtract(model.hiddenLayer.weights, matrixScale(learningRate, dw1))
 
-		fmt.Println(loss)
+		if epoch%10 == 0 {
+			fmt.Printf("epoch: %v, loss: %v\n", epoch, loss)
+		}
 	}
 
 	model.Save()

@@ -20,7 +20,8 @@ func NewLinearLayer(nInputs, nNeurons int) *LinearLayer {
 }
 
 func (l *LinearLayer) Fordward(inputs *mat.Dense) {
-	l.output = matrixAdd(matrixDot(inputs, l.weights), l.biases)
+	e := matrixDot(inputs, l.weights)
+	l.output = matrixAdd(e, l.biases)
 }
 
 type SoftmaxActivation struct {

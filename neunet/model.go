@@ -29,7 +29,6 @@ func NewModel(inputSize, hiddenSize, outputSize int) *Model {
 	}
 }
 
-// Z[L] = W[L]xA[L-1]
 func (m *Model) Forward(input *mat.Dense) *mat.Dense {
 	m.hiddenLayer.Fordward(input)
 	m.reluLayer.Fordward(m.hiddenLayer.output)

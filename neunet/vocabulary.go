@@ -27,26 +27,30 @@ func (v *Vocabulary) GetOutputSize() int {
 	return len(v.outputVocabulary)
 }
 
-func (v *Vocabulary) GetOutputVector(output string) *mat.Dense {
-	c := mat.NewDense(1, v.GetOutputSize(), nil)
+func (v *Vocabulary) GetOutputMatrix(outputs []string) *mat.Dense {
+	c := mat.NewDense(len(outputs), v.GetOutputSize(), nil)
 
-	idx, ok := v.outputVocabulary[output]
-	if ok {
-		c.Set(0, idx-1, 1)
+	for i, output := range outputs {
+		idx, ok := v.outputVocabulary[output]
+		if ok {
+			c.Set(i, idx, 1)
+		}
 	}
 
 	return c
 }
 
-func (v *Vocabulary) GetInputVector(message string) *mat.Dense {
-	c := mat.NewDense(1, v.GetInputSize(), nil)
+func (v *Vocabulary) GetInputMatrix(inputs []string) *mat.Dense {
+	c := mat.NewDense(len(inputs), v.GetInputSize(), nil)
 
-	for _, word := range strings.Split(strings.TrimSuffix(message, "\n"), " ") {
-		word := strings.ToLower(word)
-		idx, ok := v.inputVocabulary[word]
+	for i, line := range inputs {
+		for _, word := range strings.Split(strings.TrimSuffix(line, "\n"), " ") {
+			word := strings.ToLower(word)
+			idx, ok := v.inputVocabulary[word]
 
-		if ok {
-			c.Set(0, idx-1, 1)
+			if ok {
+				c.Set(i, idx, 1)
+			}
 		}
 	}
 
@@ -65,7 +69,7 @@ func (v *Vocabulary) GetOutput(idx int) string {
 func getVocabulary(data []string) map[string]int {
 	counter := map[string]int{}
 
-	i := 1
+	i := 0
 
 	for _, line := range data {
 		for _, word := range strings.Split(line, " ") {

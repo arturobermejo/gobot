@@ -1,6 +1,7 @@
 package neunet
 
 import (
+	"fmt"
 	"math"
 
 	"gonum.org/v1/gonum/mat"
@@ -73,6 +74,20 @@ func randomArray(size int, v float64) (data []float64) {
 func matrixAdd(m, n mat.Matrix) *mat.Dense {
 	r, c := m.Dims()
 	o := mat.NewDense(r, c, nil)
-	o.Add(m, n)
+
+	nr, _ := n.Dims()
+
+	if nr == 1 {
+		o.Apply(func(i int, j int, v float64) float64 {
+			return v + n.At(0, j)
+		}, m)
+	} else {
+		o.Add(m, n)
+	}
 	return o
+}
+
+func matrixPrint(X mat.Matrix) {
+	fa := mat.Formatted(X, mat.Prefix(""), mat.Squeeze())
+	fmt.Printf("%v\n", fa)
 }
