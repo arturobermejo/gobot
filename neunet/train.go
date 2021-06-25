@@ -11,7 +11,7 @@ func Train() {
 	voca := NewVocabulary(inputData, outputData)
 	model := NewModel(voca.GetInputSize(), 4, voca.GetOutputSize())
 	learningRate := 0.001
-	epochs := 1000
+	epochs := 100
 
 	criterion := NewCrossEntropy()
 
@@ -20,7 +20,7 @@ func Train() {
 		output := voca.GetOutputMatrix(outputData)
 		outputPred := model.Forward(input)
 
-		loss := criterion.Fordward(output, outputPred)
+		loss := criterion.Fordward(outputPred, output)
 
 		dz2 := matrixSubtract(outputPred, output)
 		dw2 := matrixDot(model.hiddenLayer.output.T(), dz2)

@@ -19,7 +19,7 @@ func main() {
 
 	msg, _ := reader.ReadString('\n')
 
-	message := voca.GetInputVector(msg)
+	message := voca.GetInputMatrix([]string{msg})
 	result := model.Forward(message)
 
 	fmt.Println(result)
