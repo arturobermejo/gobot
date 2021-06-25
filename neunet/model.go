@@ -30,10 +30,10 @@ func NewModel(inputSize, hiddenSize, outputSize int) *Model {
 }
 
 func (m *Model) Forward(input *mat.Dense) *mat.Dense {
-	m.hiddenLayer.Fordward(input)
-	m.reluLayer.Fordward(m.hiddenLayer.output)
-	m.outputLayer.Fordward(m.reluLayer.output)
-	m.softmaxLayer.Fordward(m.outputLayer.output)
+	m.hiddenLayer.Forward(input)
+	m.reluLayer.Forward(m.hiddenLayer.output)
+	m.outputLayer.Forward(m.reluLayer.output)
+	m.softmaxLayer.Forward(m.outputLayer.output)
 	return m.softmaxLayer.output
 }
 

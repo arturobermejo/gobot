@@ -23,7 +23,7 @@ func NewLinearLayer(nInputs, nNeurons int) *LinearLayer {
 	}
 }
 
-func (l *LinearLayer) Fordward(inputs *mat.Dense) {
+func (l *LinearLayer) Forward(inputs *mat.Dense) {
 	l.inputs = inputs
 	e := matrixDot(inputs, l.weights)
 	l.output = matrixAdd(e, l.biases)
@@ -54,7 +54,7 @@ func NewSoftmaxActivation() *SoftmaxActivation {
 	return &SoftmaxActivation{}
 }
 
-func (a *SoftmaxActivation) Fordward(inputs *mat.Dense) {
+func (a *SoftmaxActivation) Forward(inputs *mat.Dense) {
 	var sum float64
 	for _, v := range inputs.RawMatrix().Data {
 		sum += math.Exp(v)
@@ -79,7 +79,7 @@ func NewReLUActivation() *ReLUActivation {
 	return &ReLUActivation{}
 }
 
-func (a *ReLUActivation) Fordward(inputs *mat.Dense) {
+func (a *ReLUActivation) Forward(inputs *mat.Dense) {
 	a.inputs = inputs
 
 	r, c := inputs.Dims()

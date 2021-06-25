@@ -3,7 +3,7 @@ package neunet
 import "gonum.org/v1/gonum/mat"
 
 type Layer interface {
-	Fordward(inputs *mat.Dense)
+	Forward(inputs *mat.Dense)
 	Backward(dvalues *mat.Dense)
 	GetWeights() *mat.Dense
 	SetWeights(weights *mat.Dense)

@@ -22,7 +22,7 @@ func Train() {
 		// Calculate loss
 		output := voca.GetOutputMatrix(outputData)
 		outputPred := model.Forward(input)
-		loss := criterion.Fordward(outputPred, output)
+		loss := criterion.Forward(outputPred, output)
 
 		// Derivative of loss function respect to softmax input, that means:
 		// dinputs => dloss/dz = dloss/dsoftmax * dsoftmax/dz

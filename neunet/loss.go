@@ -13,7 +13,7 @@ func NewCrossEntropy() *CrossEntropy {
 	return &CrossEntropy{}
 }
 
-func (c *CrossEntropy) Fordward(yPred, y *mat.Dense) float64 {
+func (c *CrossEntropy) Forward(yPred, y *mat.Dense) float64 {
 	// TODO: clip to prevent division by 0
 
 	correctConfidences := matrixMultiply(yPred, y)
