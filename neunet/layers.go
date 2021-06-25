@@ -34,6 +34,18 @@ func (l *LinearLayer) Backward(dvalues *mat.Dense) {
 	l.dinputs = matrixDot(dvalues, l.weights.T())
 }
 
+func (l *LinearLayer) GetWeights() *mat.Dense {
+	return l.weights
+}
+
+func (l *LinearLayer) SetWeights(weights *mat.Dense) {
+	l.weights = weights
+}
+
+func (l *LinearLayer) GetdWeights() *mat.Dense {
+	return l.dweights
+}
+
 type SoftmaxActivation struct {
 	output *mat.Dense
 }

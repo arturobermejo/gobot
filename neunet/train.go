@@ -14,6 +14,7 @@ func Train() {
 	epochs := 100
 
 	criterion := NewCrossEntropy()
+	optimizer := NewSGD(learningRate)
 
 	for epoch := 1; epoch <= epochs; epoch++ {
 		input := voca.GetInputMatrix(inputData)
@@ -32,10 +33,8 @@ func Train() {
 		model.reluLayer.Backward(model.outputLayer.dinputs)
 		model.hiddenLayer.Backward(model.reluLayer.dinputs)
 
-		model.outputLayer.weights = matrixSubtract(
-			model.outputLayer.weights, matrixScale(learningRate, model.outputLayer.dweights))
-		model.hiddenLayer.weights = matrixSubtract(
-			model.hiddenLayer.weights, matrixScale(learningRate, model.hiddenLayer.dweights))
+		optimizer.UpdateParameters(model.outputLayer)
+		optimizer.UpdateParameters(model.hiddenLayer)
 
 		if epoch%10 == 0 {
 			fmt.Printf("epoch: %v, loss: %v\n", epoch, loss)
