@@ -6,17 +6,23 @@ import (
 
 func Train() {
 	dl := NewDataLoader()
-	inputData, outputData := dl.FromFile("data/messages", "data/categories")
+	dl.FromFile("data/train")
+
+	inputData, outputData := dl.Data()
 
 	voca := NewVocabulary(inputData, outputData)
+
 	model := NewModel(voca.GetInputSize(), 10, voca.GetOutputSize())
-	learningRate := 0.000001
-	epochs := 100
+
+	learningRate := 0.001
+	epochs := 500
 
 	criterion := NewCrossEntropy()
 	optimizer := NewSGD(learningRate)
 
 	for epoch := 1; epoch <= epochs; epoch++ {
+		inputData, outputData := dl.Sample(10)
+
 		input := voca.GetInputMatrix(inputData)
 
 		// Calculate loss
