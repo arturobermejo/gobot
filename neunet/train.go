@@ -6,47 +6,48 @@ import (
 
 func Train() {
 	dl := NewDataLoader()
-	dl.FromFile("data/train")
+	dl.FromFile("data/intent_train")
 
 	inputData, outputData := dl.Data()
 
 	voca := NewVocabulary(inputData, outputData)
 
-	model := NewModel(voca.GetInputSize(), 10, voca.GetOutputSize())
+	model := NewModel(voca.GetInputSize(), 16, voca.GetOutputSize())
 
-	learningRate := 0.001
-	epochs := 500
+	epochs := 50
+	batchSize := 25
 
 	criterion := NewCrossEntropy()
-	optimizer := NewSGD(learningRate)
+	optimizer := NewSGD(0.001)
 
 	for epoch := 1; epoch <= epochs; epoch++ {
-		inputData, outputData := dl.Sample(10)
+		for i := 0; i < len(inputData)/batchSize; i++ {
+			inputData, outputData := dl.Sample(batchSize*i, batchSize)
 
-		input := voca.GetInputMatrix(inputData)
+			input := voca.GetInputMatrix(inputData)
 
-		// Calculate loss
-		output := voca.GetOutputMatrix(outputData)
-		outputPred := model.Forward(input)
-		loss := criterion.Forward(outputPred, output)
+			output := voca.GetOutputMatrix(outputData)
+			outputPred := model.Forward(input)
 
-		accuracy := accuracy(outputPred, output)
+			loss := criterion.Forward(outputPred, output)
+			accuracy := accuracy(outputPred, output)
 
-		// Backward Propagation
+			if epoch%1 == 0 {
+				fmt.Printf("epoch: %v, acc: %v, loss: %v\n", epoch, accuracy, loss)
+			}
 
-		// Derivative of loss function respect to softmax input, that means:
-		// dinputs => dloss/dz = dloss/dsoftmax * dsoftmax/dz
-		dinputs := matrixSubtract(outputPred, output)
+			// Backward Propagation
 
-		model.outputLayer.Backward(dinputs)
-		model.reluLayer.Backward(model.outputLayer.dinputs)
-		model.hiddenLayer.Backward(model.reluLayer.dinputs)
+			// Derivative of loss function respect to softmax input, that means:
+			// dinputs => dloss/dz = dloss/dsoftmax * dsoftmax/dz
+			dinputs := matrixSubtract(outputPred, output)
 
-		optimizer.UpdateParameters(model.outputLayer)
-		optimizer.UpdateParameters(model.hiddenLayer)
+			model.outputLayer.Backward(dinputs)
+			model.reluLayer.Backward(model.outputLayer.dinputs)
+			model.hiddenLayer.Backward(model.reluLayer.dinputs)
 
-		if epoch%10 == 0 {
-			fmt.Printf("epoch: %v, acc: %v, loss: %v\n", epoch, accuracy, loss)
+			optimizer.UpdateParameters(model.outputLayer)
+			optimizer.UpdateParameters(model.hiddenLayer)
 		}
 	}
 

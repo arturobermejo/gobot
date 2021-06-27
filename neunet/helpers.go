@@ -30,13 +30,6 @@ func SigmoidOutputDerivative(m *mat.Dense) *mat.Dense {
 	return result
 }
 
-func matrixSubtract(m, n mat.Matrix) *mat.Dense {
-	r, c := m.Dims()
-	result := mat.NewDense(r, c, nil)
-	result.Sub(m, n)
-	return result
-}
-
 func matrixMultiply(m, n mat.Matrix) *mat.Dense {
 	r, c := m.Dims()
 	result := mat.NewDense(r, c, nil)
@@ -61,7 +54,7 @@ func matrixScale(s float64, m mat.Matrix) mat.Matrix {
 
 func randomArray(size int, v float64) (data []float64) {
 	dist := distuv.Uniform{
-		Min: -1 / math.Sqrt(v),
+		Min: 0 / math.Sqrt(v),
 		Max: 1 / math.Sqrt(v),
 	}
 
@@ -85,6 +78,24 @@ func matrixAdd(m, n mat.Matrix) *mat.Dense {
 	} else {
 		o.Add(m, n)
 	}
+
+	return o
+}
+
+func matrixSubtract(m, n mat.Matrix) *mat.Dense {
+	r, c := m.Dims()
+	o := mat.NewDense(r, c, nil)
+
+	nr, _ := n.Dims()
+
+	if nr == 1 {
+		o.Apply(func(i int, j int, v float64) float64 {
+			return v - n.At(0, j)
+		}, m)
+	} else {
+		o.Sub(m, n)
+	}
+
 	return o
 }
 
@@ -98,18 +109,18 @@ func accuracy(m, n *mat.Dense) float64 {
 	result := mat.NewDense(1, r, nil)
 
 	for i := 0; i < r; i++ {
-		mi := argmax(m.RawRowView(i))
-		ni := argmax(n.RawRowView(i))
+		mi := Argmax(m.RawRowView(i))
+		ni := Argmax(n.RawRowView(i))
 
 		if mi == ni {
-			result.Set(0, mi, 1)
+			result.Set(0, i, 1)
 		}
 	}
 
 	return stat.Mean(result.RawMatrix().Data, nil)
 }
 
-func argmax(s []float64) int {
+func Argmax(s []float64) int {
 	var maxIdx int
 
 	n := len(s)

@@ -1,6 +1,8 @@
 package neunet
 
-import "gonum.org/v1/gonum/mat"
+import (
+	"gonum.org/v1/gonum/mat"
+)
 
 type Layer interface {
 	Forward(inputs *mat.Dense)
@@ -8,6 +10,9 @@ type Layer interface {
 	GetWeights() *mat.Dense
 	SetWeights(weights *mat.Dense)
 	GetdWeights() *mat.Dense
+	GetBiases() *mat.Dense
+	SetBiases(biases *mat.Dense)
+	GetdBiases() *mat.Dense
 }
 
 type SGD struct {
@@ -21,7 +26,8 @@ func NewSGD(learningRate float64) *SGD {
 }
 
 func (o *SGD) UpdateParameters(l Layer) {
-	l.SetWeights(
-		matrixSubtract(l.GetWeights(), matrixScale(o.learningRate, l.GetdWeights())),
-	)
+	dw := matrixScale(o.learningRate, l.GetdWeights())
+	db := matrixScale(o.learningRate, l.GetdBiases())
+	l.SetWeights(matrixSubtract(l.GetWeights(), dw))
+	l.SetBiases(matrixSubtract(l.GetBiases(), db))
 }

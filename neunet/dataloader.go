@@ -3,9 +3,7 @@ package neunet
 import (
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"strings"
-	"time"
 )
 
 type DataLoader struct {
@@ -31,10 +29,16 @@ func (dl *DataLoader) Data() ([]string, []string) {
 	return dl.split(dl.data)
 }
 
-func (dl *DataLoader) Sample(n int) ([]string, []string) {
-	rand.Seed(time.Now().UnixNano())
-	rand.Shuffle(len(dl.data), func(i, j int) { dl.data[i], dl.data[j] = dl.data[j], dl.data[i] })
-	return dl.split(dl.data[:n])
+func (dl *DataLoader) Sample(s, offset int) ([]string, []string) {
+	l := len(dl.data)
+
+	e := s + offset
+
+	if e > l {
+		e = l
+	}
+
+	return dl.split(dl.data[s:e])
 }
 
 func (dl *DataLoader) split(data []string) ([]string, []string) {

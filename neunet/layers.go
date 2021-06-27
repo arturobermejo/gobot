@@ -30,6 +30,15 @@ func (l *LinearLayer) Forward(inputs *mat.Dense) {
 }
 
 func (l *LinearLayer) Backward(dvalues *mat.Dense) {
+	// TODO: Put this in helpers
+	_, c := dvalues.Dims()
+	l.dbiases = mat.NewDense(1, c, nil)
+
+	for i := 0; i < c; i++ {
+		s := mat.Sum(dvalues.ColView(i))
+		l.dbiases.Set(0, i, s)
+	}
+
 	l.dweights = matrixDot(l.inputs.T(), dvalues)
 	l.dinputs = matrixDot(dvalues, l.weights.T())
 }
@@ -44,6 +53,18 @@ func (l *LinearLayer) SetWeights(weights *mat.Dense) {
 
 func (l *LinearLayer) GetdWeights() *mat.Dense {
 	return l.dweights
+}
+
+func (l *LinearLayer) GetBiases() *mat.Dense {
+	return l.biases
+}
+
+func (l *LinearLayer) SetBiases(biases *mat.Dense) {
+	l.biases = biases
+}
+
+func (l *LinearLayer) GetdBiases() *mat.Dense {
+	return l.dbiases
 }
 
 type SoftmaxActivation struct {

@@ -31,7 +31,7 @@ func (v *Vocabulary) GetOutputMatrix(outputs []string) *mat.Dense {
 	c := mat.NewDense(len(outputs), v.GetOutputSize(), nil)
 
 	for i, output := range outputs {
-		idx, ok := v.outputVocabulary[output]
+		idx, ok := v.outputVocabulary[strings.ToLower(output)]
 		if ok {
 			c.Set(i, idx, 1)
 		}

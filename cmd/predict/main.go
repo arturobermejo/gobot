@@ -10,9 +10,10 @@ import (
 
 func main() {
 	dl := neunet.NewDataLoader()
-	inputData, outputData := dl.FromFile("data/messages", "data/categories")
+	dl.FromFile("data/train")
+	inputData, outputData := dl.Data()
 	voca := neunet.NewVocabulary(inputData, outputData)
-	model := neunet.NewModel(voca.GetInputSize(), 4, voca.GetOutputSize())
+	model := neunet.NewModel(voca.GetInputSize(), 10, voca.GetOutputSize())
 	model.Load()
 
 	reader := bufio.NewReader(os.Stdin)
@@ -21,6 +22,5 @@ func main() {
 
 	message := voca.GetInputMatrix([]string{msg})
 	result := model.Forward(message)
-
-	fmt.Println(result)
+	fmt.Println(voca.GetOutput(neunet.Argmax(result.RawMatrix().Data)))
 }
