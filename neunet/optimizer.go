@@ -16,37 +16,55 @@ type Layer interface {
 }
 
 type SGD struct {
-	learningRate float64
+	learningRate        float64
+	currentLearningRate float64
+	decay               float64
+	iterations          int
 }
 
-func NewSGD(learningRate float64) *SGD {
+func NewSGD(learningRate float64, decay float64) *SGD {
 	return &SGD{
-		learningRate: learningRate,
+		learningRate:        learningRate,
+		currentLearningRate: learningRate,
+		decay:               decay,
+		iterations:          0,
 	}
 }
 
-func (o *SGD) UpdateParameters(l Layer) {
-	dw := matrixScale(o.learningRate, l.GetdWeights())
-	db := matrixScale(o.learningRate, l.GetdBiases())
+func (o *SGD) PreUpdateParams() {
+	if o.decay != 0 {
+		o.currentLearningRate = o.learningRate * (1.0 / (1 + o.decay*float64(o.iterations)))
+	}
+}
+
+func (o *SGD) PostUpdateParams() {
+	o.iterations += 1
+}
+
+func (o *SGD) UpdateParams(l Layer) {
+	dw := matrixScale(o.currentLearningRate, l.GetdWeights())
+	db := matrixScale(o.currentLearningRate, l.GetdBiases())
 	l.SetWeights(matrixSubtract(l.GetWeights(), dw))
 	l.SetBiases(matrixSubtract(l.GetBiases(), db))
 }
 
 type Adam struct {
 	learningRate float64
+	decay        float64
+	epsilon      float64
 	beta         float64
 	beta2        float64
-	epsilon      float64
 
 	v, m []float64
 }
 
-func NewAdam(lr, beta, beta2, epsilon float64) *Adam {
+func NewAdam(lr, decay, epsilon, beta, beta2 float64) *Adam {
 	return &Adam{
 		learningRate: fparam(lr, 0.001),
+		decay:        fparam(decay, 0.0),
+		epsilon:      fparam(epsilon, 1e-7),
 		beta:         fparam(beta, 0.9),
 		beta2:        fparam(beta2, 0.999),
-		epsilon:      fparam(epsilon, 1e-8),
 	}
 }
 

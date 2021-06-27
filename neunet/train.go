@@ -18,7 +18,7 @@ func Train() {
 	batchSize := 25
 
 	criterion := NewCrossEntropy()
-	optimizer := NewSGD(0.001)
+	optimizer := NewSGD(0.001, 0.001)
 
 	for epoch := 1; epoch <= epochs; epoch++ {
 
@@ -48,8 +48,10 @@ func Train() {
 			model.reluLayer.Backward(model.outputLayer.dinputs)
 			model.hiddenLayer.Backward(model.reluLayer.dinputs)
 
-			optimizer.UpdateParameters(model.outputLayer)
-			optimizer.UpdateParameters(model.hiddenLayer)
+			optimizer.PreUpdateParams()
+			optimizer.UpdateParams(model.outputLayer)
+			optimizer.UpdateParams(model.hiddenLayer)
+			optimizer.PostUpdateParams()
 		}
 
 		fmt.Printf("Epoch: %v/%v, loss: %v\n", epoch, epochs, runningLoss/float64(n_batches))
