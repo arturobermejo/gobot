@@ -14,12 +14,20 @@ type LinearLayer struct {
 	dinputs  *mat.Dense
 	dweights *mat.Dense
 	dbiases  *mat.Dense
+
+	// momentum
+	mweights *mat.Dense
+	mbiases  *mat.Dense
 }
 
 func NewLinearLayer(nInputs, nNeurons int) *LinearLayer {
 	return &LinearLayer{
 		weights: mat.NewDense(nInputs, nNeurons, randomArray(nInputs*nNeurons, float64(nInputs))),
 		biases:  mat.NewDense(1, nNeurons, nil),
+
+		// momentum
+		mweights: mat.NewDense(nInputs, nNeurons, nil),
+		mbiases:  mat.NewDense(1, nNeurons, nil),
 	}
 }
 
@@ -65,6 +73,22 @@ func (l *LinearLayer) SetBiases(biases *mat.Dense) {
 
 func (l *LinearLayer) GetdBiases() *mat.Dense {
 	return l.dbiases
+}
+
+func (l *LinearLayer) GetmWeights() *mat.Dense {
+	return l.mweights
+}
+
+func (l *LinearLayer) SetmWeights(mweights *mat.Dense) {
+	l.mweights = mweights
+}
+
+func (l *LinearLayer) GetmBiases() *mat.Dense {
+	return l.mbiases
+}
+
+func (l *LinearLayer) SetmBiases(mbiases *mat.Dense) {
+	l.mbiases = mbiases
 }
 
 type SoftmaxActivation struct {

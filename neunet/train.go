@@ -18,7 +18,7 @@ func Train() {
 	batchSize := 25
 
 	criterion := NewCrossEntropy()
-	optimizer := NewSGD(0.001, 0.001)
+	optimizer := NewSGD(0.001, 0.001, 0.0)
 
 	for epoch := 1; epoch <= epochs; epoch++ {
 

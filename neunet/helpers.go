@@ -45,7 +45,7 @@ func matrixDot(m, n mat.Matrix) *mat.Dense {
 	return o
 }
 
-func matrixScale(s float64, m mat.Matrix) mat.Matrix {
+func matrixScale(s float64, m mat.Matrix) *mat.Dense {
 	r, c := m.Dims()
 	result := mat.NewDense(r, c, nil)
 	result.Scale(s, m)

@@ -13,6 +13,11 @@ type Layer interface {
 	GetBiases() *mat.Dense
 	SetBiases(biases *mat.Dense)
 	GetdBiases() *mat.Dense
+
+	GetmWeights() *mat.Dense
+	SetmWeights(mweights *mat.Dense)
+	GetmBiases() *mat.Dense
+	SetmBiases(mbiases *mat.Dense)
 }
 
 type SGD struct {
@@ -20,14 +25,16 @@ type SGD struct {
 	currentLearningRate float64
 	decay               float64
 	iterations          int
+	momentum            float64
 }
 
-func NewSGD(learningRate float64, decay float64) *SGD {
+func NewSGD(learningRate float64, decay float64, momentum float64) *SGD {
 	return &SGD{
 		learningRate:        learningRate,
 		currentLearningRate: learningRate,
 		decay:               decay,
 		iterations:          0,
+		momentum:            momentum,
 	}
 }
 
@@ -42,10 +49,27 @@ func (o *SGD) PostUpdateParams() {
 }
 
 func (o *SGD) UpdateParams(l Layer) {
-	dw := matrixScale(o.currentLearningRate, l.GetdWeights())
-	db := matrixScale(o.currentLearningRate, l.GetdBiases())
-	l.SetWeights(matrixSubtract(l.GetWeights(), dw))
-	l.SetBiases(matrixSubtract(l.GetBiases(), db))
+	var dw, db *mat.Dense
+
+	if o.momentum != 0.0 {
+		dw = matrixSubtract(
+			matrixScale(o.momentum, l.GetmWeights()),
+			matrixScale(o.currentLearningRate, l.GetdWeights()),
+		)
+		l.SetmWeights(dw)
+
+		db = matrixSubtract(
+			matrixScale(o.momentum, l.GetmBiases()),
+			matrixScale(o.currentLearningRate, l.GetdBiases()),
+		)
+		l.SetmBiases(db)
+	} else {
+		dw = matrixScale(-1*o.currentLearningRate, l.GetdWeights())
+		db = matrixScale(-1*o.currentLearningRate, l.GetdBiases())
+	}
+
+	l.SetWeights(matrixAdd(l.GetWeights(), dw))
+	l.SetBiases(matrixAdd(l.GetBiases(), db))
 }
 
 type Adam struct {
