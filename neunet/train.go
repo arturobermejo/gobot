@@ -21,7 +21,11 @@ func Train() {
 	optimizer := NewSGD(0.001)
 
 	for epoch := 1; epoch <= epochs; epoch++ {
-		for i := 0; i < len(inputData)/batchSize; i++ {
+
+		runningLoss := 0.0
+		n_batches := len(inputData) / batchSize
+
+		for i := 0; i < n_batches; i++ {
 			inputData, outputData := dl.Sample(batchSize*i, batchSize)
 
 			input := voca.GetInputMatrix(inputData)
@@ -30,11 +34,9 @@ func Train() {
 			outputPred := model.Forward(input)
 
 			loss := criterion.Forward(outputPred, output)
-			accuracy := accuracy(outputPred, output)
+			// accuracy := accuracy(outputPred, output)
 
-			if epoch%1 == 0 {
-				fmt.Printf("epoch: %v, acc: %v, loss: %v\n", epoch, accuracy, loss)
-			}
+			runningLoss += loss
 
 			// Backward Propagation
 
@@ -49,6 +51,8 @@ func Train() {
 			optimizer.UpdateParameters(model.outputLayer)
 			optimizer.UpdateParameters(model.hiddenLayer)
 		}
+
+		fmt.Printf("Epoch: %v/%v, loss: %v\n", epoch, epochs, runningLoss/float64(n_batches))
 	}
 
 	model.Save()
