@@ -52,10 +52,28 @@ func matrixScale(s float64, m mat.Matrix) *mat.Dense {
 	return result
 }
 
-func randomArray(size int, v float64) (data []float64) {
-	dist := distuv.Uniform{
-		Min: 0 / math.Sqrt(v),
-		Max: 1 / math.Sqrt(v),
+func matrixDiv(m, n mat.Matrix) *mat.Dense {
+	r, c := m.Dims()
+	o := mat.NewDense(r, c, nil)
+	o.DivElem(m, n)
+	return o
+}
+
+func matrixSqrt(m mat.Matrix) *mat.Dense {
+	r, c := m.Dims()
+	o := mat.NewDense(r, c, nil)
+
+	o.Apply(func(i int, j int, v float64) float64 {
+		return math.Sqrt(v)
+	}, m)
+
+	return o
+}
+
+func randomArray(size int) (data []float64) {
+	dist := distuv.Normal{
+		Mu:    0.0,
+		Sigma: 0.05,
 	}
 
 	data = make([]float64, size)
@@ -99,6 +117,28 @@ func matrixSubtract(m, n mat.Matrix) *mat.Dense {
 	return o
 }
 
+func matrixDivScale(s float64, m mat.Matrix) *mat.Dense {
+	r, c := m.Dims()
+	o := mat.NewDense(r, c, nil)
+
+	o.Apply(func(i int, j int, v float64) float64 {
+		return v / s
+	}, m)
+
+	return o
+}
+
+func matrixPowScale(s float64, m mat.Matrix) *mat.Dense {
+	r, c := m.Dims()
+	o := mat.NewDense(r, c, nil)
+
+	o.Apply(func(i int, j int, v float64) float64 {
+		return math.Pow(v, s)
+	}, m)
+
+	return o
+}
+
 func matrixPrint(X mat.Matrix) {
 	fa := mat.Formatted(X, mat.Prefix(""), mat.Squeeze())
 	fmt.Printf("%v\n", fa)
@@ -137,4 +177,15 @@ func Argmax(s []float64) int {
 	}
 
 	return maxIdx
+}
+
+func matrixClip(m *mat.Dense, s, e float64) *mat.Dense {
+	r, c := m.Dims()
+	o := mat.NewDense(r, c, nil)
+
+	o.Apply(func(i int, j int, v float64) float64 {
+		return math.Min(math.Max(s, v), e)
+	}, m)
+
+	return o
 }

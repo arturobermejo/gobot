@@ -13,16 +13,15 @@ func NewCrossEntropy() *CrossEntropy {
 	return &CrossEntropy{}
 }
 
-func (c *CrossEntropy) Forward(yPred, y *mat.Dense) float64 {
-	// TODO: clip to prevent division by 0
+func (c *CrossEntropy) Forward(yPred, yTrue *mat.Dense) float64 {
+	yPredClipped := matrixClip(yPred, 1e-7, 1-1e-7)
 
-	correctConfidences := matrixMultiply(yPred, y)
-	nr, _ := correctConfidences.Dims()
+	e := matrixMultiply(yPredClipped, yTrue)
+	r, _ := e.Dims()
+	o := mat.NewDense(1, r, nil)
 
-	o := mat.NewDense(nr, 1, nil)
-
-	for i := 0; i < nr; i++ {
-		o.Set(i, 0, -1*math.Log(mat.Sum(correctConfidences.RowView(i))))
+	for i := 0; i < r; i++ {
+		o.Set(0, i, -1*math.Log(mat.Sum(e.RowView(i))))
 	}
 
 	mean := stat.Mean(o.RawMatrix().Data, nil)

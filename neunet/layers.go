@@ -15,19 +15,23 @@ type LinearLayer struct {
 	dweights *mat.Dense
 	dbiases  *mat.Dense
 
-	// momentum
+	// adam
 	mweights *mat.Dense
 	mbiases  *mat.Dense
+	cweights *mat.Dense
+	cbiases  *mat.Dense
 }
 
 func NewLinearLayer(nInputs, nNeurons int) *LinearLayer {
 	return &LinearLayer{
-		weights: mat.NewDense(nInputs, nNeurons, randomArray(nInputs*nNeurons, float64(nInputs))),
+		weights: mat.NewDense(nInputs, nNeurons, randomArray(nInputs*nNeurons)),
 		biases:  mat.NewDense(1, nNeurons, nil),
 
-		// momentum
+		// adam
 		mweights: mat.NewDense(nInputs, nNeurons, nil),
 		mbiases:  mat.NewDense(1, nNeurons, nil),
+		cweights: mat.NewDense(nInputs, nNeurons, nil),
+		cbiases:  mat.NewDense(1, nNeurons, nil),
 	}
 }
 
@@ -51,46 +55,6 @@ func (l *LinearLayer) Backward(dvalues *mat.Dense) {
 	l.dinputs = matrixDot(dvalues, l.weights.T())
 }
 
-func (l *LinearLayer) GetWeights() *mat.Dense {
-	return l.weights
-}
-
-func (l *LinearLayer) SetWeights(weights *mat.Dense) {
-	l.weights = weights
-}
-
-func (l *LinearLayer) GetdWeights() *mat.Dense {
-	return l.dweights
-}
-
-func (l *LinearLayer) GetBiases() *mat.Dense {
-	return l.biases
-}
-
-func (l *LinearLayer) SetBiases(biases *mat.Dense) {
-	l.biases = biases
-}
-
-func (l *LinearLayer) GetdBiases() *mat.Dense {
-	return l.dbiases
-}
-
-func (l *LinearLayer) GetmWeights() *mat.Dense {
-	return l.mweights
-}
-
-func (l *LinearLayer) SetmWeights(mweights *mat.Dense) {
-	l.mweights = mweights
-}
-
-func (l *LinearLayer) GetmBiases() *mat.Dense {
-	return l.mbiases
-}
-
-func (l *LinearLayer) SetmBiases(mbiases *mat.Dense) {
-	l.mbiases = mbiases
-}
-
 type SoftmaxActivation struct {
 	output *mat.Dense
 }
@@ -100,16 +64,29 @@ func NewSoftmaxActivation() *SoftmaxActivation {
 }
 
 func (a *SoftmaxActivation) Forward(inputs *mat.Dense) {
-	var sum float64
-	for _, v := range inputs.RawMatrix().Data {
-		sum += math.Exp(v)
+	r, c := inputs.Dims()
+
+	expValues := mat.NewDense(r, c, nil)
+
+	for i := 0; i < r; i++ {
+		max := mat.Max(inputs.RowView(i))
+
+		for j := 0; j < c; j++ {
+			v := math.Exp(inputs.At(i, j) - max)
+			expValues.Set(i, j, v)
+		}
 	}
 
-	m := mat.NewDense(inputs.RawMatrix().Rows, inputs.RawMatrix().Cols, nil)
+	m := mat.NewDense(r, c, nil)
 
-	m.Apply(func(i int, j int, v float64) float64 {
-		return math.Exp(v) / sum
-	}, inputs)
+	for i := 0; i < r; i++ {
+		s := mat.Sum(expValues.RowView(i))
+
+		for j := 0; j < c; j++ {
+			v := expValues.At(i, j) / s
+			m.Set(i, j, v)
+		}
+	}
 
 	a.output = m
 }

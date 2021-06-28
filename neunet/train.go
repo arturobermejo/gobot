@@ -18,12 +18,15 @@ func Train() {
 	batchSize := 25
 
 	criterion := NewCrossEntropy()
-	optimizer := NewSGD(0.001, 0.001, 0.0)
+	optimizer := NewSGD(0.001, 0.0, 0.0)
+	// optimizer := NewAdam(0.001)
 
 	for epoch := 1; epoch <= epochs; epoch++ {
 
 		runningLoss := 0.0
+		runningAccuracy := 0.0
 		n_batches := len(inputData) / batchSize
+		// n_batches := 1
 
 		for i := 0; i < n_batches; i++ {
 			inputData, outputData := dl.Sample(batchSize*i, batchSize)
@@ -34,7 +37,7 @@ func Train() {
 			outputPred := model.Forward(input)
 
 			loss := criterion.Forward(outputPred, output)
-			// accuracy := accuracy(outputPred, output)
+			runningAccuracy += accuracy(outputPred, output)
 
 			runningLoss += loss
 
@@ -54,7 +57,10 @@ func Train() {
 			optimizer.PostUpdateParams()
 		}
 
-		fmt.Printf("Epoch: %v/%v, loss: %v\n", epoch, epochs, runningLoss/float64(n_batches))
+		fmt.Printf(
+			"Epoch: %v/%v, loss: %.4f, acc: %.4f\n",
+			epoch, epochs, runningLoss/float64(n_batches), runningAccuracy/float64(n_batches),
+		)
 	}
 
 	model.Save()
