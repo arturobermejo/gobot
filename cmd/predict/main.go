@@ -9,18 +9,17 @@ import (
 )
 
 func main() {
-	dl := neunet.NewDataLoader()
-	dl.FromFile("data/intent_train")
-	inputData, outputData := dl.Data()
-	voca := neunet.NewVocabulary(inputData, outputData)
-	model := neunet.NewModel(voca.GetInputSize(), 16, voca.GetOutputSize())
-	model.Load()
+	model := neunet.LoadModel("output/hw.model", "output/ow.model", "output/hb.model", "output/ob.model")
+	inVocab := neunet.LoadVocab("output/invocab.model")
+	outVocab := neunet.LoadVocab("output/outvocab.model")
 
+	fmt.Println("Hello!")
 	reader := bufio.NewReader(os.Stdin)
-
 	msg, _ := reader.ReadString('\n')
 
-	message := voca.GetInputMatrix([]string{msg})
-	result := model.Forward(message)
-	fmt.Println(voca.GetOutput(neunet.Argmax(result.RawMatrix().Data)))
+	input := neunet.OneHotEncode([]string{msg}, inVocab)
+	output := model.Forward(input)
+	intent := neunet.OneHotDecode(output, outVocab)
+
+	fmt.Println(intent)
 }
