@@ -59,7 +59,7 @@ func (v *Vocabulary) GetInputMatrix(inputs []string) *mat.Dense {
 
 func (v *Vocabulary) GetOutput(idx int) string {
 	for k, v := range v.outputVocabulary {
-		if v+1 == idx {
+		if v == idx {
 			return k
 		}
 	}
