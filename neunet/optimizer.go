@@ -125,12 +125,12 @@ func (o *Adam) UpdateParams(l *LinearLayer) {
 	// -self.current_learning_rate * weight_momentums_corrected / (np.sqrt(weight_cache_corrected) + self.epsilon)
 	dw := matrixDiv(
 		matrixScale(-1*o.currentLearningRate, mweightsCorr),
-		matrixScale(o.epsilon, matrixSqrt(cweightsCorr)),
+		matrixAddScale(o.epsilon, matrixSqrt(cweightsCorr)),
 	)
 	// -self.current_learning_rate * bias_momentums_corrected / (np.sqrt(bias_cache_corrected) + self.epsilon)
 	db := matrixDiv(
 		matrixScale(-1*o.currentLearningRate, mbiasesCorr),
-		matrixScale(o.epsilon, matrixSqrt(cbiasesCorr)),
+		matrixAddScale(o.epsilon, matrixSqrt(cbiasesCorr)),
 	)
 
 	l.weights = matrixAdd(l.weights, dw)

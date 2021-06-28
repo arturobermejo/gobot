@@ -14,12 +14,12 @@ func Train() {
 
 	model := NewModel(voca.GetInputSize(), 16, voca.GetOutputSize())
 
-	epochs := 50
-	batchSize := 25
+	epochs := 100
+	batchSize := 10
 
 	criterion := NewCrossEntropy()
-	optimizer := NewSGD(0.001, 0.0, 0.0)
-	// optimizer := NewAdam(0.001)
+	// optimizer := NewSGD(0.001, 0.0, 0.0)
+	optimizer := NewAdam(0.001)
 
 	for epoch := 1; epoch <= epochs; epoch++ {
 

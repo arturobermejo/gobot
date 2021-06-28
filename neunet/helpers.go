@@ -128,6 +128,17 @@ func matrixDivScale(s float64, m mat.Matrix) *mat.Dense {
 	return o
 }
 
+func matrixAddScale(s float64, m mat.Matrix) *mat.Dense {
+	r, c := m.Dims()
+	o := mat.NewDense(r, c, nil)
+
+	o.Apply(func(i int, j int, v float64) float64 {
+		return v + s
+	}, m)
+
+	return o
+}
+
 func matrixPowScale(s float64, m mat.Matrix) *mat.Dense {
 	r, c := m.Dims()
 	o := mat.NewDense(r, c, nil)
@@ -172,7 +183,6 @@ func Argmax(s []float64) int {
 		if v > max {
 			max = v
 			maxIdx = i
-			break
 		}
 	}
 
