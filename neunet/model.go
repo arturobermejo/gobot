@@ -25,7 +25,7 @@ type Model struct {
 }
 
 func NewModel(inputSize, outputSize int) *Model {
-	hiddenSize := 16
+	hiddenSize := 32
 
 	m := &Model{
 		inputSize:    inputSize,

@@ -17,7 +17,7 @@ func ChatService(msg string) (string, float64, string) {
 
 	var response string
 
-	if prob > 0.2 {
+	if prob > 0.3 {
 		responses := ResponseSet[intent]
 		response = responses[rand.Intn(len(responses))]
 	} else {
