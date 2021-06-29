@@ -17,18 +17,23 @@
                   <v-card-title class="deep-purple lighten-2 white--text">
                     🤖 Resbot
                   </v-card-title>
-                  <v-card-text class="flex-grow-1 overflow-y-auto pt-5" id="chatbox" style="scroll-behavior: smooth;">
+                  <v-card-text class="flex-grow-1 overflow-y-auto" id="chatbox" style="scroll-behavior: smooth;">
                     <template v-for="(msg, i) in messages">
                       <div :class="{ 'd-flex flex-row-reverse': msg.me }">
-                        <v-chip
-                          :color="msg.me ? '' : 'deep-purple lighten-4'"
-                          class="pa-4 mb-2"
+                        <v-card
+                          :color="msg.me ? 'grey lighten-2' : 'deep-purple lighten-4'"
+                          elevation="0"
+                          class="mt-3"
+                          style="max-width: 300px;"
                         >
-                          {{ msg.content }}
-                          <sub class="ml-2" style="font-size: 0.5rem;">
-                            {{ msg.created_at }}
-                          </sub>
-                        </v-chip>
+                          <v-card-text class="pa-3">
+                            <div style="font-size: 0.5rem;">
+                              {{ msg.created_at }}
+                            </div>
+                            {{ msg.content }}
+                          </v-card-text>
+                          <!-- <v-card-subtitle>{{ msg.created_at }}</v-card-subtitle> -->
+                        </v-card>
                       </div>
                     </template>
                   </v-card-text>
