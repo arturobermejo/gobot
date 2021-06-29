@@ -17,7 +17,7 @@
                   <v-card-title class="deep-purple lighten-2 white--text">
                     🤖 Resbot
                   </v-card-title>
-                  <v-card-text class="flex-grow-1 overflow-y-auto pt-5">
+                  <v-card-text class="flex-grow-1 overflow-y-auto pt-5" id="chatbox" style="scroll-behavior: smooth;">
                     <template v-for="(msg, i) in messages">
                       <div :class="{ 'd-flex flex-row-reverse': msg.me }">
                         <v-chip
@@ -73,11 +73,12 @@
             me: me,
             created_at: new Date().toLocaleTimeString(),
           })
+          setTimeout(() => { this.downScroll() })
         },
         getResponse(message) {
           var that = this
           var xhr = new XMLHttpRequest()
-          xhr.onreadystatechange = function() {
+          xhr.onreadystatechange = () => {
             if (xhr.readyState == 4) {
               if (xhr.status == 200) {
                 that.appendMessage(JSON.parse(xhr.responseText).output, false)
@@ -92,11 +93,15 @@
         },
         clearForm() {
           this.currentMessage = ""
+        },
+        downScroll() {
+          var e = document.getElementById("chatbox")
+          e.scrollTop = e.scrollHeight
         }
       },
-      mounted: function() {
+      mounted() {
         this.appendMessage("Bienvenido, soy Resbot 😀", false)
-      },
+      }
     })
   </script>
 </body>
