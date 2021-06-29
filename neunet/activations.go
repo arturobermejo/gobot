@@ -7,6 +7,7 @@ import (
 )
 
 type SoftmaxActivation struct {
+	inputs *mat.Dense
 	output *mat.Dense
 }
 
@@ -15,6 +16,8 @@ func NewSoftmaxActivation() *SoftmaxActivation {
 }
 
 func (a *SoftmaxActivation) Forward(inputs *mat.Dense) {
+	a.inputs = inputs
+
 	r, c := inputs.Dims()
 
 	expValues := mat.NewDense(r, c, nil)
