@@ -3,6 +3,7 @@ package neunet
 import (
 	"math"
 
+	"github.com/arturobermejo/gobot/num"
 	"gonum.org/v1/gonum/mat"
 	"gonum.org/v1/gonum/stat"
 )
@@ -14,9 +15,9 @@ func NewCrossEntropy() *CrossEntropy {
 }
 
 func (c *CrossEntropy) Forward(yPred, yTrue *mat.Dense) float64 {
-	yPredClipped := matrixClip(yPred, 1e-7, 1-1e-7)
+	yPredClipped := num.Clip(yPred, 1e-7, 1-1e-7)
 
-	e := matrixMultiply(yPredClipped, yTrue)
+	e := num.Mul(yPredClipped, yTrue)
 	r, _ := e.Dims()
 	o := mat.NewDense(1, r, nil)
 

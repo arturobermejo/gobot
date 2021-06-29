@@ -3,6 +3,7 @@ package neunet
 import (
 	"math"
 
+	"github.com/arturobermejo/gobot/num"
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -37,8 +38,8 @@ func NewLinearLayer(nInputs, nNeurons int) *LinearLayer {
 
 func (l *LinearLayer) Forward(inputs *mat.Dense) {
 	l.inputs = inputs
-	e := matrixDot(inputs, l.weights)
-	l.output = matrixAdd(e, l.biases)
+	e := num.Dot(inputs, l.weights)
+	l.output = num.Sum(e, l.biases)
 }
 
 func (l *LinearLayer) Backward(dvalues *mat.Dense) {
@@ -51,8 +52,8 @@ func (l *LinearLayer) Backward(dvalues *mat.Dense) {
 		l.dbiases.Set(0, i, s)
 	}
 
-	l.dweights = matrixDot(l.inputs.T(), dvalues)
-	l.dinputs = matrixDot(dvalues, l.weights.T())
+	l.dweights = num.Dot(l.inputs.T(), dvalues)
+	l.dinputs = num.Dot(dvalues, l.weights.T())
 }
 
 type SoftmaxActivation struct {

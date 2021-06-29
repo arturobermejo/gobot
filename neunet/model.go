@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/arturobermejo/gobot/num"
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -111,7 +112,7 @@ func (m *Model) Train(dl DataLoader, epochs int) {
 
 			// Derivative of loss function respect to softmax input, that means:
 			// dinputs => dloss/dz = dloss/dsoftmax * dsoftmax/dz
-			dinputs := matrixSubtract(outputPred, output)
+			dinputs := num.Sub(outputPred, output)
 
 			m.outputLayer.Backward(dinputs)
 			m.reluLayer.Backward(m.outputLayer.dinputs)

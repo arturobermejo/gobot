@@ -3,6 +3,7 @@ package neunet
 import (
 	"math"
 
+	"github.com/arturobermejo/gobot/num"
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -38,24 +39,24 @@ func (o *SGD) UpdateParams(l *LinearLayer) {
 	var dw, db *mat.Dense
 
 	if o.momentum != 0.0 {
-		dw = matrixSubtract(
-			matrixScale(o.momentum, l.mweights),
-			matrixScale(o.currentLearningRate, l.dweights),
+		dw = num.Sub(
+			num.MulScale(o.momentum, l.mweights),
+			num.MulScale(o.currentLearningRate, l.dweights),
 		)
 		l.mweights = dw
 
-		db = matrixSubtract(
-			matrixScale(o.momentum, l.mbiases),
-			matrixScale(o.currentLearningRate, l.dbiases),
+		db = num.Sub(
+			num.MulScale(o.momentum, l.mbiases),
+			num.MulScale(o.currentLearningRate, l.dbiases),
 		)
 		l.mbiases = db
 	} else {
-		dw = matrixScale(-1*o.currentLearningRate, l.dweights)
-		db = matrixScale(-1*o.currentLearningRate, l.dbiases)
+		dw = num.MulScale(-1*o.currentLearningRate, l.dweights)
+		db = num.MulScale(-1*o.currentLearningRate, l.dbiases)
 	}
 
-	l.weights = matrixAdd(l.weights, dw)
-	l.biases = matrixAdd(l.biases, db)
+	l.weights = num.Sum(l.weights, dw)
+	l.biases = num.Sum(l.biases, db)
 }
 
 type Adam struct {
@@ -93,46 +94,46 @@ func (o *Adam) PostUpdateParams() {
 func (o *Adam) UpdateParams(l *LinearLayer) {
 	// layer.weight_momentums = self.beta_1 * layer.weight_momentums + (1 - self.beta_1) * layer.dweights
 
-	l.mweights = matrixAdd(
-		matrixScale(o.beta1, l.mweights), matrixScale((1-o.beta1), l.dweights),
+	l.mweights = num.Sum(
+		num.MulScale(o.beta1, l.mweights), num.MulScale((1-o.beta1), l.dweights),
 	)
 	// layer.bias_momentums = self.beta_1 * layer.bias_momentums + (1 - self.beta_1) * layer.dbiases
-	l.mbiases = matrixAdd(
-		matrixScale(o.beta1, l.mbiases), matrixScale((1-o.beta1), l.dbiases),
+	l.mbiases = num.Sum(
+		num.MulScale(o.beta1, l.mbiases), num.MulScale((1-o.beta1), l.dbiases),
 	)
 
 	// weight_momentums_corrected = layer.weight_momentums / (1 - self.beta_1 ** (self.iterations + 1))
-	mweightsCorr := matrixDivScale(1-math.Pow(o.beta1, float64(o.iterations+1)), l.mweights)
+	mweightsCorr := num.DivScale(1-math.Pow(o.beta1, float64(o.iterations+1)), l.mweights)
 	// bias_momentums_corrected = layer.bias_momentums / (1 - self.beta_1 ** (self.iterations + 1))
-	mbiasesCorr := matrixDivScale(1-math.Pow(o.beta1, float64(o.iterations+1)), l.mbiases)
+	mbiasesCorr := num.DivScale(1-math.Pow(o.beta1, float64(o.iterations+1)), l.mbiases)
 
 	// layer.weight_cache = self.beta_2 * layer.weight_cache + (1 - self.beta_2) * layer.dweights**2
-	l.cweights = matrixAdd(
-		matrixScale(o.beta2, l.cweights),
-		matrixScale(1-o.beta2, matrixPowScale(2, l.dweights)),
+	l.cweights = num.Sum(
+		num.MulScale(o.beta2, l.cweights),
+		num.MulScale(1-o.beta2, num.PowScale(2, l.dweights)),
 	)
 	// layer.bias_cache = self.beta_2 * layer.bias_cache + \ (1 - self.beta_2) * layer.dbiases**2
-	l.cbiases = matrixAdd(
-		matrixScale(o.beta2, l.cbiases),
-		matrixScale(1-o.beta2, matrixPowScale(2, l.dbiases)),
+	l.cbiases = num.Sum(
+		num.MulScale(o.beta2, l.cbiases),
+		num.MulScale(1-o.beta2, num.PowScale(2, l.dbiases)),
 	)
 
 	// weight_cache_corrected = layer.weight_cache / (1 - self.beta_2 ** (self.iterations + 1))
-	cweightsCorr := matrixDivScale(1-math.Pow(o.beta2, float64(o.iterations+1)), l.cweights)
+	cweightsCorr := num.DivScale(1-math.Pow(o.beta2, float64(o.iterations+1)), l.cweights)
 	// bias_cache_corrected = layer.bias_cache / (1 - self.beta_2 ** (self.iterations + 1))
-	cbiasesCorr := matrixDivScale(1-math.Pow(o.beta2, float64(o.iterations+1)), l.cbiases)
+	cbiasesCorr := num.DivScale(1-math.Pow(o.beta2, float64(o.iterations+1)), l.cbiases)
 
 	// -self.current_learning_rate * weight_momentums_corrected / (np.sqrt(weight_cache_corrected) + self.epsilon)
-	dw := matrixDiv(
-		matrixScale(-1*o.currentLearningRate, mweightsCorr),
-		matrixAddScale(o.epsilon, matrixSqrt(cweightsCorr)),
+	dw := num.Div(
+		num.MulScale(-1*o.currentLearningRate, mweightsCorr),
+		num.SumScale(o.epsilon, num.Sqrt(cweightsCorr)),
 	)
 	// -self.current_learning_rate * bias_momentums_corrected / (np.sqrt(bias_cache_corrected) + self.epsilon)
-	db := matrixDiv(
-		matrixScale(-1*o.currentLearningRate, mbiasesCorr),
-		matrixAddScale(o.epsilon, matrixSqrt(cbiasesCorr)),
+	db := num.Div(
+		num.MulScale(-1*o.currentLearningRate, mbiasesCorr),
+		num.SumScale(o.epsilon, num.Sqrt(cbiasesCorr)),
 	)
 
-	l.weights = matrixAdd(l.weights, dw)
-	l.biases = matrixAdd(l.biases, db)
+	l.weights = num.Sum(l.weights, dw)
+	l.biases = num.Sum(l.biases, db)
 }
