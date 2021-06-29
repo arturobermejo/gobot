@@ -1,18 +1,23 @@
 {
     "greeting": [
-        "Hola, ¿En que te puedo ayudar?"
+        "Hola, ¿En que te puedo ayudar?",
+        "Hola, ¿Que deseas ordenar?"
     ],
     "liked": [
-        "Nos alegra saberlo, muchas gracias (:"
+        "Nos alegra saberlo, muchas gracias (:",
+        "Estupendo, gracias por su preferencia"
     ],
     "disliked": [
-        "Lamentamos oir eso, nos esforzaremos para mejorar"
+        "Lamentamos oir eso, nos esforzaremos para mejorar",
+        "Lamento su mala experiencia, mejoraremos"
     ],
     "pizza": [
-        "Recibido, en unos momentos estaremos enviando su pizza"
+        "Recibido, en unos momentos estaremos enviando su pizza",
+        "Listo, tu pizza irá en camino pronto"
     ],
     "hamburger": [
-        "Recibido, en unos momentos estaremos enviando su hamburguesa"
+        "Recibido, en unos momentos estaremos enviando su hamburguesa",
+        "Listo, tu hamburguesa irá en camino pronto"
     ],
     "salad": [
         "Recibido, en unos momentos estaremos enviando su ensalada"
