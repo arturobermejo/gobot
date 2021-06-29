@@ -16,7 +16,7 @@ func randomArray(size int) (data []float64) {
 	for i := 0; i < size; i++ {
 		data[i] = dist.Rand()
 	}
-	return
+	return data
 }
 
 func accuracy(m, n *mat.Dense) float64 {
