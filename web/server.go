@@ -1,4 +1,4 @@
-package api
+package web
 
 import (
 	"encoding/json"
@@ -29,8 +29,10 @@ func (s *Server) Run() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Get("/", Index)
 	r.Post("/api/chat", ChatHandler)
 
+	fmt.Printf(fmt.Sprintf("Starting server at port %v\n", s.port))
 	http.ListenAndServe(fmt.Sprintf(":%v", s.port), r)
 }
 

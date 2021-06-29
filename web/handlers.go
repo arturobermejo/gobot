@@ -1,8 +1,9 @@
-package api
+package web
 
 import (
 	"encoding/json"
 	"net/http"
+	"text/template"
 )
 
 type UserMessage struct {
@@ -33,4 +34,15 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	json.NewEncoder(w).Encode(res)
+}
+
+func Index(w http.ResponseWriter, r *http.Request) {
+	t, err := template.New("index.html").Delims("[[", "]]").ParseFiles("static/index.html")
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	t.Delims("[[", "]]")
+	t.Execute(w, nil)
 }

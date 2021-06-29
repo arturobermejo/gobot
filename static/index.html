@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Resbot</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+  <div id="app">
+    <v-app style="background-color: #f3f2ef;">
+        <v-container class="fill-height" style="max-width: 720px;">
+          <v-row class="no-gutters elevation-5">
+              <v-responsive class="overflow-y-hidden fill-height" height="500">
+                <v-card flat class="d-flex flex-column fill-height">
+                  <v-card-title class="deep-purple lighten-2 white--text">
+                    Resbot
+                  </v-card-title>
+                  <v-card-text class="flex-grow-1 overflow-y-auto pt-5">
+                    <template v-for="(msg, i) in messages">
+                      <div :class="{ 'd-flex flex-row-reverse': msg.me }">
+                        <v-chip
+                          :color="msg.me ? '' : 'deep-purple lighten-4'"
+                          class="pa-4 mb-2"
+                        >
+                          {{ msg.content }}
+                          <sub class="ml-2" style="font-size: 0.5rem;">
+                            {{ msg.created_at }}
+                          </sub>
+                        </v-chip>
+                      </div>
+                    </template>
+                  </v-card-text>
+                  <v-card-text class="flex-shrink-1">
+                      <v-text-field
+                        v-model="currentMessage"
+                        label="Escribe tu mensaje..."
+                        type="text"
+                        no-details
+                        outlined
+                        append-outer-icon="mdi-send"
+                        @keyup.enter="sendMessage"
+                        @click:append-outer="sendMessage"
+                        hide-details
+                    />
+                  </v-card-text>
+                </v-card>
+              </v-responsive>
+          </v-row>
+        </v-container>
+    </v-app>
+</div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      vuetify: new Vuetify(),
+      data: () => ({
+        currentMessage: "",
+        messages: []
+      }),
+      methods: {
+        sendMessage () {
+          this.appendMessage(this.currentMessage, true)
+          response = this.getResponse(this.currentMessage)
+          this.clearForm()
+        },
+        appendMessage(msg, me) {
+          this.messages.push({
+            content: msg,
+            me: me,
+            created_at: new Date().toLocaleTimeString(),
+          })
+        },
+        getResponse(message) {
+          var that = this
+          var xhr = new XMLHttpRequest()
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+              if (xhr.status == 200) {
+                that.appendMessage(JSON.parse(xhr.responseText).output, false)
+              } else {
+                alert("It was an error sending your message.")
+              }
+            }
+          }
+          xhr.open('POST', '/api/chat', true)
+          xhr.setRequestHeader("Content-Type", "application/json")
+          xhr.send(JSON.stringify({input: message}))
+        },
+        clearForm() {
+          this.currentMessage = ""
+        }
+      },
+      mounted: function() {
+        this.appendMessage("Bienvenido, soy Resbot (:", false)
+      },
+    })
+  </script>
+</body>
+</html>
