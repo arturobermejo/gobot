@@ -1,6 +1,14 @@
 package neunet
 
 import (
+	"log"
+	"regexp"
+	"strings"
+	"unicode"
+
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 	"gonum.org/v1/gonum/mat"
 	"gonum.org/v1/gonum/stat"
 	"gonum.org/v1/gonum/stat/distuv"
@@ -51,4 +59,25 @@ func Argmax(s []float64) (int, float64) {
 	}
 
 	return maxIdx, max
+}
+
+func RemoveNoLetters(s string) string {
+	reg, err := regexp.Compile("[^a-zA-Z ]+")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return reg.ReplaceAllString(s, "")
+}
+
+func RemoveAccents(s string) string {
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+	output, _, err := transform.String(t, s)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return output
+}
+
+func CleanText(s string) string {
+	return strings.ToLower(RemoveNoLetters(RemoveAccents(s)))
 }

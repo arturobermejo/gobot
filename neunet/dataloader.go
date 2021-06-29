@@ -42,7 +42,7 @@ func (dl *dataLoader) parseData() {
 
 	for _, line := range dl.data {
 		sample := strings.Split(line, "|")
-		txtInputs = append(txtInputs, strings.ToLower(sample[0]))
+		txtInputs = append(txtInputs, CleanText(sample[0]))
 		txtOutputs = append(txtOutputs, sample[1])
 	}
 
@@ -120,7 +120,9 @@ func OneHotEncode(data []string, vocab map[string]int) *mat.Dense {
 	c := mat.NewDense(len(data), len(vocab), nil)
 
 	for i, line := range data {
-		for _, word := range strings.Split(strings.TrimSuffix(line, "\n"), " ") {
+		words := strings.Split(CleanText(line), " ")
+
+		for _, word := range words {
 			idx, ok := vocab[word]
 
 			if ok {
