@@ -92,43 +92,32 @@ func (o *Adam) PostUpdateParams() {
 }
 
 func (o *Adam) UpdateParams(l *LinearLayer) {
-	// layer.weight_momentums = self.beta_1 * layer.weight_momentums + (1 - self.beta_1) * layer.dweights
-
 	l.mweights = num.Sum(
 		num.MulScale(o.beta1, l.mweights), num.MulScale((1-o.beta1), l.dweights),
 	)
-	// layer.bias_momentums = self.beta_1 * layer.bias_momentums + (1 - self.beta_1) * layer.dbiases
 	l.mbiases = num.Sum(
 		num.MulScale(o.beta1, l.mbiases), num.MulScale((1-o.beta1), l.dbiases),
 	)
 
-	// weight_momentums_corrected = layer.weight_momentums / (1 - self.beta_1 ** (self.iterations + 1))
 	mweightsCorr := num.DivScale(1-math.Pow(o.beta1, float64(o.iterations+1)), l.mweights)
-	// bias_momentums_corrected = layer.bias_momentums / (1 - self.beta_1 ** (self.iterations + 1))
 	mbiasesCorr := num.DivScale(1-math.Pow(o.beta1, float64(o.iterations+1)), l.mbiases)
 
-	// layer.weight_cache = self.beta_2 * layer.weight_cache + (1 - self.beta_2) * layer.dweights**2
 	l.cweights = num.Sum(
 		num.MulScale(o.beta2, l.cweights),
 		num.MulScale(1-o.beta2, num.PowScale(2, l.dweights)),
 	)
-	// layer.bias_cache = self.beta_2 * layer.bias_cache + \ (1 - self.beta_2) * layer.dbiases**2
 	l.cbiases = num.Sum(
 		num.MulScale(o.beta2, l.cbiases),
 		num.MulScale(1-o.beta2, num.PowScale(2, l.dbiases)),
 	)
 
-	// weight_cache_corrected = layer.weight_cache / (1 - self.beta_2 ** (self.iterations + 1))
 	cweightsCorr := num.DivScale(1-math.Pow(o.beta2, float64(o.iterations+1)), l.cweights)
-	// bias_cache_corrected = layer.bias_cache / (1 - self.beta_2 ** (self.iterations + 1))
 	cbiasesCorr := num.DivScale(1-math.Pow(o.beta2, float64(o.iterations+1)), l.cbiases)
 
-	// -self.current_learning_rate * weight_momentums_corrected / (np.sqrt(weight_cache_corrected) + self.epsilon)
 	dw := num.Div(
 		num.MulScale(-1*o.currentLearningRate, mweightsCorr),
 		num.SumScale(o.epsilon, num.Sqrt(cweightsCorr)),
 	)
-	// -self.current_learning_rate * bias_momentums_corrected / (np.sqrt(bias_cache_corrected) + self.epsilon)
 	db := num.Div(
 		num.MulScale(-1*o.currentLearningRate, mbiasesCorr),
 		num.SumScale(o.epsilon, num.Sqrt(cbiasesCorr)),
