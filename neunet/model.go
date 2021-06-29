@@ -40,28 +40,28 @@ func NewModel(inputSize, outputSize int) *Model {
 	return m
 }
 
-func LoadModel(hwpath, owpath, hbpath, obpath string) *Model {
+func LoadModel(dir string) *Model {
 	var hWeights, oWeights, hBiases, oBiases mat.Dense
 
-	hw, err := os.Open(hwpath)
+	hw, err := os.Open(fmt.Sprintf("%s/hw.model", dir))
 	defer hw.Close()
 	if err == nil {
 		hWeights.UnmarshalBinaryFrom(hw)
 	}
 
-	ow, err := os.Open(owpath)
+	ow, err := os.Open(fmt.Sprintf("%s/ow.model", dir))
 	defer ow.Close()
 	if err == nil {
 		oWeights.UnmarshalBinaryFrom(ow)
 	}
 
-	hb, err := os.Open(hbpath)
+	hb, err := os.Open(fmt.Sprintf("%s/hb.model", dir))
 	defer hb.Close()
 	if err == nil {
 		hBiases.UnmarshalBinaryFrom(hb)
 	}
 
-	ob, err := os.Open(obpath)
+	ob, err := os.Open(fmt.Sprintf("%s/ob.model", dir))
 	defer ob.Close()
 	if err == nil {
 		oBiases.UnmarshalBinaryFrom(ob)
@@ -89,26 +89,25 @@ func (m *Model) Forward(input *mat.Dense) *mat.Dense {
 
 func (m *Model) Train(dl DataLoader, epochs int) {
 	batchSize := 10
-
 	criterion := NewCrossEntropy()
 	optimizer := NewAdam(0.001)
 
 	for epoch := 1; epoch <= epochs; epoch++ {
-
 		runningLoss := 0.0
 		runningAccuracy := 0.0
 		n_batches := dl.Size() / batchSize
 
 		for i := 0; i < n_batches; i++ {
 			input, output := dl.Sample(batchSize*i, batchSize)
+
+			// 1. Forward
 			outputPred := m.Forward(input)
 
-			loss := criterion.Forward(outputPred, output)
+			// Calculate metrics
+			runningLoss += criterion.Forward(outputPred, output)
 			runningAccuracy += accuracy(outputPred, output)
 
-			runningLoss += loss
-
-			// Backward Propagation
+			// 2. Backward Propagation
 
 			// Derivative of loss function respect to softmax input, that means:
 			// dinputs => dloss/dz = dloss/dsoftmax * dsoftmax/dz
@@ -118,6 +117,7 @@ func (m *Model) Train(dl DataLoader, epochs int) {
 			m.reluLayer.Backward(m.outputLayer.dinputs)
 			m.hiddenLayer.Backward(m.reluLayer.dinputs)
 
+			// 3. Update Parameters
 			optimizer.PreUpdateParams()
 			optimizer.UpdateParams(m.outputLayer)
 			optimizer.UpdateParams(m.hiddenLayer)
@@ -131,26 +131,26 @@ func (m *Model) Train(dl DataLoader, epochs int) {
 	}
 }
 
-func (m *Model) Save() {
-	hw, err := os.Create("output/hw.model")
+func (m *Model) Save(dir string) {
+	hw, err := os.Create(fmt.Sprintf("%s/hw.model", dir))
 	defer hw.Close()
 	if err == nil {
 		m.hiddenLayer.weights.MarshalBinaryTo(hw)
 	}
 
-	ow, err := os.Create("output/ow.model")
+	ow, err := os.Create(fmt.Sprintf("%s/hw.model", dir))
 	defer ow.Close()
 	if err == nil {
 		m.outputLayer.weights.MarshalBinaryTo(ow)
 	}
 
-	hb, err := os.Create("output/hb.model")
+	hb, err := os.Create(fmt.Sprintf("%s/hw.model", dir))
 	defer hb.Close()
 	if err == nil {
 		m.hiddenLayer.biases.MarshalBinaryTo(hb)
 	}
 
-	ob, err := os.Create("output/ob.model")
+	ob, err := os.Create(fmt.Sprintf("%s/hw.model", dir))
 	defer ob.Close()
 	if err == nil {
 		m.outputLayer.biases.MarshalBinaryTo(ob)

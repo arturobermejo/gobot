@@ -10,5 +10,5 @@ func main() {
 
 	model := neunet.NewModel(len(dl.InVocab()), len(dl.OutVocab()))
 	model.Train(dl, 200)
-	model.Save()
+	model.Save("output")
 }

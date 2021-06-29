@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	model := neunet.LoadModel("output/hw.model", "output/ow.model", "output/hb.model", "output/ob.model")
+	model := neunet.LoadModel("output")
 	inVocab := neunet.LoadVocab("output/invocab.model")
 	outVocab := neunet.LoadVocab("output/outvocab.model")
 
