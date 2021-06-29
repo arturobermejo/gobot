@@ -1,0 +1,23 @@
+{
+    "greeting": [
+        "hola en que te puedo ayudar?"
+    ],
+    "liked": [
+        "nos alegra saberlo, gracias :)"
+    ],
+    "disliked": [
+        "lamentamos oir eso, nos esforzaremos para mejorar"
+    ],
+    "pizza": [
+        "listo, en unos momentos estaremos enviando su pizza"
+    ],
+    "hamburger": [
+        "listo, en unos momentos estaremos enviando su hamburguesa"
+    ],
+    "salad": [
+        "listo, en unos momentos estaremos enviando su ensalada"
+    ],
+    "soda": [
+        "listo, en unos momentos estaremos enviando su soda"
+    ]
+}
