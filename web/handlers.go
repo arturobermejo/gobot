@@ -11,9 +11,10 @@ type UserMessage struct {
 }
 
 type UserResponse struct {
-	Input  string `json:"input"`
-	Intent string `json:"intent"`
-	Output string `json:"output"`
+	Input  string  `json:"input"`
+	Intent string  `json:"intent"`
+	Prob   float64 `json:"prob"`
+	Output string  `json:"output"`
 }
 
 func ChatHandler(w http.ResponseWriter, r *http.Request) {
@@ -26,9 +27,9 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	intent, output := ChatService(m.Input)
+	intent, prob, output := ChatService(m.Input)
 
-	res := UserResponse{m.Input, intent, output}
+	res := UserResponse{m.Input, intent, prob, output}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

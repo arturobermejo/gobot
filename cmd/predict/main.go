@@ -19,7 +19,7 @@ func main() {
 
 	input := neunet.OneHotEncode([]string{msg}, inVocab)
 	output := model.Forward(input)
-	intent := neunet.OneHotDecode(output, outVocab)
+	intent, prob := neunet.OutputDecode(output, outVocab)
 
-	fmt.Println(intent)
+	fmt.Println(intent, prob)
 }

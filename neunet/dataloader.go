@@ -132,16 +132,16 @@ func OneHotEncode(data []string, vocab map[string]int) *mat.Dense {
 	return c
 }
 
-func OneHotDecode(data *mat.Dense, vocab map[string]int) string {
-	idx := Argmax(data.RawMatrix().Data)
+func OutputDecode(data *mat.Dense, vocab map[string]int) (string, float64) {
+	idx, prob := Argmax(data.RawMatrix().Data)
 
 	for k, v := range vocab {
 		if v == idx {
-			return k
+			return k, prob
 		}
 	}
 
-	return ""
+	return "", 0.0
 }
 
 func LoadVocab(path string) map[string]int {

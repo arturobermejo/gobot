@@ -138,19 +138,19 @@ func (m *Model) Save(dir string) {
 		m.hiddenLayer.weights.MarshalBinaryTo(hw)
 	}
 
-	ow, err := os.Create(fmt.Sprintf("%s/hw.model", dir))
+	ow, err := os.Create(fmt.Sprintf("%s/ow.model", dir))
 	defer ow.Close()
 	if err == nil {
 		m.outputLayer.weights.MarshalBinaryTo(ow)
 	}
 
-	hb, err := os.Create(fmt.Sprintf("%s/hw.model", dir))
+	hb, err := os.Create(fmt.Sprintf("%s/hb.model", dir))
 	defer hb.Close()
 	if err == nil {
 		m.hiddenLayer.biases.MarshalBinaryTo(hb)
 	}
 
-	ob, err := os.Create(fmt.Sprintf("%s/hw.model", dir))
+	ob, err := os.Create(fmt.Sprintf("%s/ob.model", dir))
 	defer ob.Close()
 	if err == nil {
 		m.outputLayer.biases.MarshalBinaryTo(ob)

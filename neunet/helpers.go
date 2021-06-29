@@ -24,8 +24,8 @@ func accuracy(m, n *mat.Dense) float64 {
 	result := mat.NewDense(1, r, nil)
 
 	for i := 0; i < r; i++ {
-		mi := Argmax(m.RawRowView(i))
-		ni := Argmax(n.RawRowView(i))
+		mi, _ := Argmax(m.RawRowView(i))
+		ni, _ := Argmax(n.RawRowView(i))
 
 		if mi == ni {
 			result.Set(0, i, 1)
@@ -35,7 +35,7 @@ func accuracy(m, n *mat.Dense) float64 {
 	return stat.Mean(result.RawMatrix().Data, nil)
 }
 
-func Argmax(s []float64) int {
+func Argmax(s []float64) (int, float64) {
 	var maxIdx int
 
 	n := len(s)
@@ -50,5 +50,5 @@ func Argmax(s []float64) int {
 		}
 	}
 
-	return maxIdx
+	return maxIdx, max
 }

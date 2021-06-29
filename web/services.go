@@ -6,16 +6,23 @@ import (
 	"github.com/arturobermejo/gobot/neunet"
 )
 
-func ChatService(msg string) (string, string) {
+func ChatService(msg string) (string, float64, string) {
 	model := neunet.LoadModel("output")
 	inVocab := neunet.LoadVocab("output/invocab.model")
 	outVocab := neunet.LoadVocab("output/outvocab.model")
 
 	input := neunet.OneHotEncode([]string{msg}, inVocab)
 	output := model.Forward(input)
-	intent := neunet.OneHotDecode(output, outVocab)
+	intent, prob := neunet.OutputDecode(output, outVocab)
 
-	responses := ResponseSet[intent]
+	var response string
 
-	return intent, responses[rand.Intn(len(responses))]
+	if prob > 0.2 {
+		responses := ResponseSet[intent]
+		response = responses[rand.Intn(len(responses))]
+	} else {
+		response = "Disculpa, no entendimos tu mensaje"
+	}
+
+	return intent, prob, response
 }
