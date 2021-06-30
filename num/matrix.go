@@ -40,13 +40,6 @@ func Sqrt(m mat.Matrix) *mat.Dense {
 	return o
 }
 
-func MulScalar(s float64, m mat.Matrix) *mat.Dense {
-	r, c := m.Dims()
-	result := mat.NewDense(r, c, nil)
-	result.Scale(s, m)
-	return result
-}
-
 func Sum(m, n mat.Matrix) *mat.Dense {
 	r, c := m.Dims()
 	o := mat.NewDense(r, c, nil)
@@ -79,6 +72,13 @@ func Sub(m, n mat.Matrix) *mat.Dense {
 	}
 
 	return o
+}
+
+func MulScalar(s float64, m mat.Matrix) *mat.Dense {
+	r, c := m.Dims()
+	result := mat.NewDense(r, c, nil)
+	result.Scale(s, m)
+	return result
 }
 
 func DivScalar(s float64, m mat.Matrix) *mat.Dense {
