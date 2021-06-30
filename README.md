@@ -22,7 +22,7 @@ Results with the example data
 ![Epoch: 200/200, loss: 0.1312, acc: 1.0000](docs/train_results.png "Train results")
 
 ## Run Example
-To run a web interface with a web application using the model.
+To run a web interface with a web application using the model. The bot responses according to each intent category are stored in `data/responses.json`.
 
 ```
 $ ./run.sh
