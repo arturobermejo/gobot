@@ -14,20 +14,22 @@ import (
 	"gonum.org/v1/gonum/stat/distuv"
 )
 
-func randomArray(size int) (data []float64) {
+// Return a random slice with samples from a normal distribution
+func RandomSlice(size int) []float64 {
 	dist := distuv.Normal{
 		Mu:    0.0,
 		Sigma: 0.05,
 	}
 
-	data = make([]float64, size)
+	r := make([]float64, size)
 	for i := 0; i < size; i++ {
-		data[i] = dist.Rand()
+		r[i] = dist.Rand()
 	}
-	return data
+	return r
 }
 
-func accuracy(m, n *mat.Dense) float64 {
+// Get mean accuracy between two matrix
+func Accuracy(m, n *mat.Dense) float64 {
 	r, _ := m.Dims()
 	result := mat.NewDense(1, r, nil)
 
@@ -43,22 +45,23 @@ func accuracy(m, n *mat.Dense) float64 {
 	return stat.Mean(result.RawMatrix().Data, nil)
 }
 
+// Get the max value of an array and the corresponding index
 func Argmax(s []float64) (int, float64) {
-	var maxIdx int
+	var idx int
 
 	n := len(s)
 	max := s[0]
-	maxIdx = 0
+	idx = 0
 
 	for i := 1; i < n; i++ {
 		v := s[i]
 		if v > max {
 			max = v
-			maxIdx = i
+			idx = i
 		}
 	}
 
-	return maxIdx, max
+	return idx, max
 }
 
 func RemoveNoLetters(s string) string {

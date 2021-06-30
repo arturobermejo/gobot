@@ -105,7 +105,7 @@ func (m *Model) Train(dl DataLoader, epochs int) {
 
 			// Calculate metrics
 			runningLoss += criterion.Forward(outputPred, output)
-			runningAccuracy += accuracy(outputPred, output)
+			runningAccuracy += Accuracy(outputPred, output)
 
 			// 2. Backward Propagation
 

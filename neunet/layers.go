@@ -23,7 +23,7 @@ type LinearLayer struct {
 
 func NewLinearLayer(nInputs, nNeurons int) *LinearLayer {
 	return &LinearLayer{
-		weights: mat.NewDense(nInputs, nNeurons, randomArray(nInputs*nNeurons)),
+		weights: mat.NewDense(nInputs, nNeurons, RandomSlice(nInputs*nNeurons)),
 		biases:  mat.NewDense(1, nNeurons, nil),
 
 		mweights: mat.NewDense(nInputs, nNeurons, nil),
