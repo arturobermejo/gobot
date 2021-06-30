@@ -16,7 +16,7 @@ func TestGetVocab(t *testing.T) {
 
 func TestOneHotEncode(t *testing.T) {
 	vocab := map[string]int{"one": 0, "two": 1, "three": 2, "four": 3}
-	r := OneHotEncode([]string{"two one one", "one any four"}, vocab, 10)
+	r := OneHotEncode([]string{"two one one", "one any four"}, vocab, 0)
 	expected := mat.NewDense(2, 4, []float64{1, 1, 0, 0, 1, 0, 0, 1})
 
 	assert.Equal(t, expected, r)
