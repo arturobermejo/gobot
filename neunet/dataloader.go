@@ -2,6 +2,7 @@ package neunet
 
 import (
 	"encoding/gob"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -80,15 +81,15 @@ func (dl *dataLoader) OutVocab() map[string]int {
 	return dl.outVocab
 }
 
-func (dl *dataLoader) Save() {
-	iv, err := os.Create("output/invocab.model")
+func (dl *dataLoader) Save(dir string) {
+	iv, err := os.Create(fmt.Sprintf("%s/invocab.model", dir))
 	defer iv.Close()
 	if err == nil {
 		e := gob.NewEncoder(iv)
 		e.Encode(dl.inVocab)
 	}
 
-	ov, err := os.Create("output/outvocab.model")
+	ov, err := os.Create(fmt.Sprintf("%s/outvocab.model", dir))
 	defer ov.Close()
 	if err == nil {
 		e := gob.NewEncoder(ov)

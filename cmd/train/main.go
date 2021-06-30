@@ -6,7 +6,7 @@ import (
 
 func main() {
 	dl := neunet.NewDataLoader("data/train")
-	dl.Save()
+	dl.Save("output")
 
 	model := neunet.NewModel(len(dl.InVocab()), len(dl.OutVocab()))
 	model.Train(dl, 200)
