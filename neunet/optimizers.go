@@ -40,19 +40,19 @@ func (o *SGD) UpdateParams(l *LinearLayer) {
 
 	if o.momentum != 0.0 {
 		dw = num.Sub(
-			num.MulScale(o.momentum, l.mweights),
-			num.MulScale(o.currentLearningRate, l.dweights),
+			num.MulScalar(o.momentum, l.mweights),
+			num.MulScalar(o.currentLearningRate, l.dweights),
 		)
 		l.mweights = dw
 
 		db = num.Sub(
-			num.MulScale(o.momentum, l.mbiases),
-			num.MulScale(o.currentLearningRate, l.dbiases),
+			num.MulScalar(o.momentum, l.mbiases),
+			num.MulScalar(o.currentLearningRate, l.dbiases),
 		)
 		l.mbiases = db
 	} else {
-		dw = num.MulScale(-1*o.currentLearningRate, l.dweights)
-		db = num.MulScale(-1*o.currentLearningRate, l.dbiases)
+		dw = num.MulScalar(-1*o.currentLearningRate, l.dweights)
+		db = num.MulScalar(-1*o.currentLearningRate, l.dbiases)
 	}
 
 	l.weights = num.Sum(l.weights, dw)
@@ -93,34 +93,34 @@ func (o *Adam) PostUpdateParams() {
 
 func (o *Adam) UpdateParams(l *LinearLayer) {
 	l.mweights = num.Sum(
-		num.MulScale(o.beta1, l.mweights), num.MulScale((1-o.beta1), l.dweights),
+		num.MulScalar(o.beta1, l.mweights), num.MulScalar((1-o.beta1), l.dweights),
 	)
 	l.mbiases = num.Sum(
-		num.MulScale(o.beta1, l.mbiases), num.MulScale((1-o.beta1), l.dbiases),
+		num.MulScalar(o.beta1, l.mbiases), num.MulScalar((1-o.beta1), l.dbiases),
 	)
 
-	mweightsCorr := num.DivScale(1-math.Pow(o.beta1, float64(o.iterations+1)), l.mweights)
-	mbiasesCorr := num.DivScale(1-math.Pow(o.beta1, float64(o.iterations+1)), l.mbiases)
+	mweightsCorr := num.DivScalar(1-math.Pow(o.beta1, float64(o.iterations+1)), l.mweights)
+	mbiasesCorr := num.DivScalar(1-math.Pow(o.beta1, float64(o.iterations+1)), l.mbiases)
 
 	l.cweights = num.Sum(
-		num.MulScale(o.beta2, l.cweights),
-		num.MulScale(1-o.beta2, num.PowScale(2, l.dweights)),
+		num.MulScalar(o.beta2, l.cweights),
+		num.MulScalar(1-o.beta2, num.PowScalar(2, l.dweights)),
 	)
 	l.cbiases = num.Sum(
-		num.MulScale(o.beta2, l.cbiases),
-		num.MulScale(1-o.beta2, num.PowScale(2, l.dbiases)),
+		num.MulScalar(o.beta2, l.cbiases),
+		num.MulScalar(1-o.beta2, num.PowScalar(2, l.dbiases)),
 	)
 
-	cweightsCorr := num.DivScale(1-math.Pow(o.beta2, float64(o.iterations+1)), l.cweights)
-	cbiasesCorr := num.DivScale(1-math.Pow(o.beta2, float64(o.iterations+1)), l.cbiases)
+	cweightsCorr := num.DivScalar(1-math.Pow(o.beta2, float64(o.iterations+1)), l.cweights)
+	cbiasesCorr := num.DivScalar(1-math.Pow(o.beta2, float64(o.iterations+1)), l.cbiases)
 
 	dw := num.Div(
-		num.MulScale(-1*o.currentLearningRate, mweightsCorr),
-		num.SumScale(o.epsilon, num.Sqrt(cweightsCorr)),
+		num.MulScalar(-1*o.currentLearningRate, mweightsCorr),
+		num.SumScalar(o.epsilon, num.Sqrt(cweightsCorr)),
 	)
 	db := num.Div(
-		num.MulScale(-1*o.currentLearningRate, mbiasesCorr),
-		num.SumScale(o.epsilon, num.Sqrt(cbiasesCorr)),
+		num.MulScalar(-1*o.currentLearningRate, mbiasesCorr),
+		num.SumScalar(o.epsilon, num.Sqrt(cbiasesCorr)),
 	)
 
 	l.weights = num.Sum(l.weights, dw)
