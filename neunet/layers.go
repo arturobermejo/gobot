@@ -35,8 +35,7 @@ func NewLinearLayer(nInputs, nNeurons int) *LinearLayer {
 
 func (l *LinearLayer) Forward(inputs *mat.Dense) {
 	l.inputs = inputs
-	e := num.Dot(inputs, l.weights)
-	l.output = num.Sum(e, l.biases)
+	l.output = num.Sum(num.Dot(inputs, l.weights), l.biases)
 }
 
 func (l *LinearLayer) Backward(dvalues *mat.Dense) {

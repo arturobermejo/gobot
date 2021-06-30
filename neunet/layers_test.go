@@ -18,8 +18,6 @@ func TestLinearLayer(t *testing.T) {
 	assert.Equal(t, 1, r, nil)
 	assert.Equal(t, 3, c, nil)
 
-	// TODO: test array initialization
-
 	// Test Forward
 	l.weights = mat.NewDense(2, 3, []float64{1, 2, 3, -1, -2, -3})
 	l.biases = mat.NewDense(1, 3, []float64{-1, 1, -1})
@@ -36,4 +34,18 @@ func TestLinearLayer(t *testing.T) {
 	assert.True(t, isEqual)
 
 	// Test Backward
+	l.weights = mat.NewDense(2, 2, []float64{1, 2, -1, -2})
+	l.inputs = mat.NewDense(2, 2, []float64{0.5, 0.5, -0.5, -0.5})
+
+	l.Backward(mat.NewDense(2, 2, []float64{2, 2, 2, 1}))
+
+	assert.True(t, mat.Equal(
+		l.dbiases, mat.NewDense(1, 2, []float64{4, 3}),
+	))
+	assert.True(t, mat.Equal(
+		l.dweights, mat.NewDense(2, 2, []float64{0, 0.5, 0, 0.5}),
+	))
+	assert.True(t, mat.Equal(
+		l.dinputs, mat.NewDense(2, 2, []float64{6.0, -6.0, 4.0, -4.0}),
+	))
 }
