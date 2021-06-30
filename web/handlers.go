@@ -6,11 +6,21 @@ import (
 	"text/template"
 )
 
-type UserMessage struct {
+type ChatRequest struct {
 	Input string `json:"input"`
 }
 
-type UserResponse struct {
+func (r *ChatRequest) Validate() map[string]string {
+	errs := map[string]string{}
+
+	if r.Input == "" {
+		errs["input"] = "The field is required"
+	}
+
+	return errs
+}
+
+type ChatResponse struct {
 	Input  string  `json:"input"`
 	Intent string  `json:"intent"`
 	Prob   float64 `json:"prob"`
@@ -18,23 +28,25 @@ type UserResponse struct {
 }
 
 func ChatHandler(w http.ResponseWriter, r *http.Request) {
-	var m UserMessage
+	var req ChatRequest
 
-	err := json.NewDecoder(r.Body).Decode(&m)
-
+	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	intent, prob, output := ChatService(m.Input)
+	errs := req.Validate()
+	if len(errs) != 0 {
+		JsonResponse(w, errs, http.StatusBadRequest)
+		return
+	}
 
-	res := UserResponse{m.Input, intent, prob, output}
+	intent, prob, output := ChatService(req.Input)
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	res := ChatResponse{req.Input, intent, prob, output}
 
-	json.NewEncoder(w).Encode(res)
+	JsonResponse(w, res, http.StatusOK)
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
