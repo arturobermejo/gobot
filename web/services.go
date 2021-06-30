@@ -11,7 +11,7 @@ func ChatService(msg string) (string, float64, string) {
 	inVocab := neunet.LoadVocab("output/invocab.model")
 	outVocab := neunet.LoadVocab("output/outvocab.model")
 
-	input := neunet.OneHotEncode([]string{msg}, inVocab)
+	input := neunet.OneHotEncode([]string{msg}, inVocab, 3)
 	output := model.Forward(input)
 	intent, prob := neunet.OutputDecode(output, outVocab)
 

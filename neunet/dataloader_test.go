@@ -16,7 +16,7 @@ func TestGetVocab(t *testing.T) {
 
 func TestOneHotEncode(t *testing.T) {
 	vocab := map[string]int{"one": 0, "two": 1, "three": 2, "four": 3}
-	r := OneHotEncode([]string{"two one one", "one any four"}, vocab)
+	r := OneHotEncode([]string{"two one one", "one any four"}, vocab, 10)
 	expected := mat.NewDense(2, 4, []float64{1, 1, 0, 0, 1, 0, 0, 1})
 
 	assert.Equal(t, expected, r)
@@ -28,4 +28,11 @@ func TestOutputDecode(t *testing.T) {
 
 	assert.Equal(t, "cat2", s)
 	assert.Equal(t, 0.6, p)
+}
+
+func TestLevenshtein(t *testing.T) {
+	w1 := "helo"
+	w2 := "hello"
+	d := Levenshtein(&w1, &w2)
+	assert.Equal(t, 1, d)
 }
