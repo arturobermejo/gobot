@@ -10,7 +10,7 @@ import (
 func TestAccuracy(t *testing.T) {
 	acc := Accuracy(
 		mat.NewDense(2, 3, []float64{0.9, 0.1, 0.5, 0.2, 0.4, 0.7}),
-		mat.NewDense(2, 3, []float64{1, 0, 0, 0, 1, 0}),
+		mat.NewDense(1, 2, []float64{1, 2}),
 	)
 
 	assert.Equal(t, 0.5, acc)

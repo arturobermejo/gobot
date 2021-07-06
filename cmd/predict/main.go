@@ -17,8 +17,8 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	msg, _ := reader.ReadString('\n')
 
-	input := neunet.OneHotEncode([]string{msg}, inVocab, 3)
-	output := model.Forward(input)
+	input := neunet.EncodeInputs([]string{msg}, inVocab, 3)
+	output := neunet.Softmax(model.Forward(input))
 	intent, prob := neunet.OutputDecode(output, outVocab)
 
 	fmt.Println(intent, prob)

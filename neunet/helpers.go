@@ -35,7 +35,7 @@ func Accuracy(m, n *mat.Dense) float64 {
 
 	for i := 0; i < r; i++ {
 		mi, _ := Argmax(m.RawRowView(i))
-		ni, _ := Argmax(n.RawRowView(i))
+		ni := int(n.At(0, i))
 
 		if mi == ni {
 			result.Set(0, i, 1)
