@@ -50,8 +50,8 @@ func (dl *dataLoader) parseData() {
 	dl.inVocab = GetVocab(txtInputs)
 	dl.outVocab = GetVocab(txtOutputs)
 
-	dl.inputs = OneHotEncode(txtInputs, dl.inVocab, 0)
-	dl.outputs = OneHotEncode(txtOutputs, dl.outVocab, 0)
+	dl.inputs = EncodeInputs(txtInputs, dl.inVocab, 0)
+	dl.outputs = EncodeOutputs(txtOutputs, dl.outVocab)
 }
 
 func (dl *dataLoader) Sample(i, offset int) (*mat.Dense, *mat.Dense) {
@@ -64,7 +64,7 @@ func (dl *dataLoader) Sample(i, offset int) (*mat.Dense, *mat.Dense) {
 	}
 
 	inputs := dl.inputs.Slice(i, e, 0, len(dl.inVocab))
-	outputs := dl.outputs.Slice(i, e, 0, len(dl.outVocab))
+	outputs := dl.outputs.Slice(0, 1, i, e)
 
 	return inputs.(*mat.Dense), outputs.(*mat.Dense)
 }
@@ -117,7 +117,7 @@ func GetVocab(data []string) map[string]int {
 	return counter
 }
 
-func OneHotEncode(data []string, vocab map[string]int, threshold int) *mat.Dense {
+func EncodeInputs(data []string, vocab map[string]int, threshold int) *mat.Dense {
 	c := mat.NewDense(len(data), len(vocab), nil)
 
 	for i, line := range data {
@@ -141,6 +141,16 @@ func OneHotEncode(data []string, vocab map[string]int, threshold int) *mat.Dense
 	}
 
 	return c
+}
+
+func EncodeOutputs(data []string, vocab map[string]int) *mat.Dense {
+	o := mat.NewDense(1, len(data), nil)
+
+	for i, output := range data {
+		o.Set(0, i, float64(vocab[output]))
+	}
+
+	return o
 }
 
 func OutputDecode(data *mat.Dense, vocab map[string]int) (string, float64) {

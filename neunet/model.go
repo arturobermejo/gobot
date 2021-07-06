@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/arturobermejo/gobot/num"
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -18,23 +17,21 @@ type Model struct {
 	hiddenSize int
 	outputSize int
 
-	hiddenLayer  *LinearLayer
-	reluLayer    *ReLUActivation
-	outputLayer  *LinearLayer
-	softmaxLayer *SoftmaxActivation
+	hiddenLayer *LinearLayer
+	reluLayer   *ReLUActivation
+	outputLayer *LinearLayer
 }
 
 func NewModel(inputSize, outputSize int) *Model {
 	hiddenSize := 32
 
 	m := &Model{
-		inputSize:    inputSize,
-		hiddenSize:   hiddenSize,
-		outputSize:   outputSize,
-		hiddenLayer:  NewLinearLayer(inputSize, hiddenSize),
-		reluLayer:    NewReLUActivation(),
-		outputLayer:  NewLinearLayer(hiddenSize, outputSize),
-		softmaxLayer: NewSoftmaxActivation(),
+		inputSize:   inputSize,
+		hiddenSize:  hiddenSize,
+		outputSize:  outputSize,
+		hiddenLayer: NewLinearLayer(inputSize, hiddenSize),
+		reluLayer:   NewReLUActivation(),
+		outputLayer: NewLinearLayer(hiddenSize, outputSize),
 	}
 
 	return m
@@ -83,8 +80,7 @@ func (m *Model) Forward(input *mat.Dense) *mat.Dense {
 	m.hiddenLayer.Forward(input)
 	m.reluLayer.Forward(m.hiddenLayer.output)
 	m.outputLayer.Forward(m.reluLayer.output)
-	m.softmaxLayer.Forward(m.outputLayer.output)
-	return m.softmaxLayer.output
+	return m.outputLayer.output
 }
 
 func (m *Model) Train(dl DataLoader, epochs int) {
@@ -108,12 +104,8 @@ func (m *Model) Train(dl DataLoader, epochs int) {
 			runningAccuracy += Accuracy(outputPred, output)
 
 			// 2. Backward Propagation
-
-			// Derivative of loss function respect to softmax input, that means:
-			// dinputs => dloss/dz = dloss/dsoftmax * dsoftmax/dz
-			dinputs := num.Sub(outputPred, output)
-
-			m.outputLayer.Backward(dinputs)
+			criterion.Backward(output)
+			m.outputLayer.Backward(criterion.dinputs)
 			m.reluLayer.Backward(m.outputLayer.dinputs)
 			m.hiddenLayer.Backward(m.reluLayer.dinputs)
 

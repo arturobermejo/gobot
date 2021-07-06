@@ -6,45 +6,6 @@ import (
 	"gonum.org/v1/gonum/mat"
 )
 
-type SoftmaxActivation struct {
-	inputs *mat.Dense
-	output *mat.Dense
-}
-
-func NewSoftmaxActivation() *SoftmaxActivation {
-	return &SoftmaxActivation{}
-}
-
-func (a *SoftmaxActivation) Forward(inputs *mat.Dense) {
-	a.inputs = inputs
-
-	r, c := inputs.Dims()
-
-	expValues := mat.NewDense(r, c, nil)
-
-	for i := 0; i < r; i++ {
-		max := mat.Max(inputs.RowView(i))
-
-		for j := 0; j < c; j++ {
-			v := math.Exp(inputs.At(i, j) - max)
-			expValues.Set(i, j, v)
-		}
-	}
-
-	m := mat.NewDense(r, c, nil)
-
-	for i := 0; i < r; i++ {
-		s := mat.Sum(expValues.RowView(i))
-
-		for j := 0; j < c; j++ {
-			v := expValues.At(i, j) / s
-			m.Set(i, j, v)
-		}
-	}
-
-	a.output = m
-}
-
 type ReLUActivation struct {
 	inputs  *mat.Dense
 	output  *mat.Dense
