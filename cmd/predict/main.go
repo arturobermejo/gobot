@@ -11,15 +11,15 @@ import (
 
 func main() {
 	model := neunet.LoadModel("output")
-	inVocab := neunet.LoadVocab("output/invocab.model", neunet.CleanText)
-	outVocab := neunet.LoadVocab("output/outvocab.model", nil)
+	inVocab := neunet.LoadVocab("output/invocab.model")
+	outVocab := neunet.LoadVocab("output/outvocab.model")
 
 	fmt.Println("Hello!")
 	reader := bufio.NewReader(os.Stdin)
 	msg, _ := reader.ReadString('\n')
 
 	input := mat.NewDense(1, inVocab.Size(), nil)
-	inVocab.OneHotEncode(msg, input, 0, 2)
+	inVocab.OneHotEncode(neunet.CleanText(msg), input, 0, 2)
 
 	var intent string
 	var prob float64

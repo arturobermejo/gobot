@@ -10,14 +10,12 @@ import (
 )
 
 type vocab struct {
-	data    map[string]int
-	cleaner func(string) string
+	data map[string]int
 }
 
-func NewVocab(cleaner func(string) string) *vocab {
+func NewVocab() *vocab {
 	return &vocab{
-		data:    map[string]int{},
-		cleaner: cleaner,
+		data: map[string]int{},
 	}
 }
 
@@ -28,10 +26,6 @@ func (v *vocab) ProcessText(txt string) {
 }
 
 func (v *vocab) AddWord(word string) {
-	if v.cleaner != nil {
-		word = v.cleaner(word)
-	}
-
 	_, ok := v.data[word]
 
 	if !ok {
@@ -44,10 +38,6 @@ func (v *vocab) Size() int {
 }
 
 func (v *vocab) OneHotEncode(txt string, m *mat.Dense, r int, threshold int) {
-	if v.cleaner != nil {
-		txt = v.cleaner(txt)
-	}
-
 	for _, word := range strings.Split(txt, " ") {
 		i, ok := v.data[word]
 
@@ -66,10 +56,6 @@ func (v *vocab) OneHotEncode(txt string, m *mat.Dense, r int, threshold int) {
 }
 
 func (v *vocab) IndexEncode(txt string, m *mat.Dense, r int) {
-	if v.cleaner != nil {
-		txt = v.cleaner(txt)
-	}
-
 	i, ok := v.data[txt]
 
 	if ok {
@@ -99,7 +85,7 @@ func (v *vocab) Save(path string) {
 	}
 }
 
-func LoadVocab(path string, cleaner func(string) string) *vocab {
+func LoadVocab(path string) *vocab {
 	var data map[string]int
 
 	f, err := os.Open(path)
@@ -117,7 +103,6 @@ func LoadVocab(path string, cleaner func(string) string) *vocab {
 	}
 
 	return &vocab{
-		data:    data,
-		cleaner: cleaner,
+		data: data,
 	}
 }

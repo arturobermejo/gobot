@@ -9,11 +9,11 @@ import (
 
 func ChatService(msg string) (intent string, prob float64, res string) {
 	model := neunet.LoadModel("output")
-	inVocab := neunet.LoadVocab("output/invocab.model", neunet.CleanText)
-	outVocab := neunet.LoadVocab("output/outvocab.model", nil)
+	inVocab := neunet.LoadVocab("output/invocab.model")
+	outVocab := neunet.LoadVocab("output/outvocab.model")
 
 	input := mat.NewDense(1, inVocab.Size(), nil)
-	inVocab.OneHotEncode(msg, input, 0, 2)
+	inVocab.OneHotEncode(neunet.CleanText(msg), input, 0, 2)
 
 	if mat.Sum(input) == 0 {
 		intent = ""

@@ -21,17 +21,18 @@ func main() {
 
 	s := bufio.NewScanner(f)
 
-	inVocab := neunet.NewVocab(neunet.CleanText)
-	outVocab := neunet.NewVocab(nil)
+	inVocab := neunet.NewVocab()
+	outVocab := neunet.NewVocab()
 
 	inData := []string{}
 	outData := []string{}
 
 	for s.Scan() {
 		sample := strings.Split(s.Text(), "|")
-		inVocab.ProcessText(sample[0])
+		inSample := neunet.CleanText(sample[0])
+		inVocab.ProcessText(inSample)
 		outVocab.ProcessText(sample[1])
-		inData = append(inData, neunet.CleanText(sample[0]))
+		inData = append(inData, neunet.CleanText(inSample))
 		outData = append(outData, sample[1])
 	}
 
