@@ -44,11 +44,13 @@ func (v *vocab) OneHotEncode(txt string, m *mat.Dense, r int, threshold int) {
 		if ok {
 			m.Set(r, i, 1.)
 		} else {
-			for k, i := range v.data {
-				d := Levenshtein(&k, &word)
-				if d < threshold {
-					m.Set(r, i, 1)
-					break
+			if threshold > 0 {
+				for k, i := range v.data {
+					d := Levenshtein(&k, &word)
+					if d < threshold {
+						m.Set(r, i, 1)
+						break
+					}
 				}
 			}
 		}
