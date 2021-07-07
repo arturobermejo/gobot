@@ -8,8 +8,10 @@ import (
 )
 
 type DataLoader interface {
-	Sample(i, offset int) (*mat.Dense, *mat.Dense)
-	Size() int
+	Batch() bool
+	BatchCount() int
+	Reset()
+	Data() (*mat.Dense, *mat.Dense)
 }
 
 type Model struct {
@@ -84,17 +86,19 @@ func (m *Model) Forward(input *mat.Dense) *mat.Dense {
 }
 
 func (m *Model) Train(dl DataLoader, epochs int) {
-	batchSize := 10
 	criterion := NewCrossEntropy()
 	optimizer := NewAdam(0.001)
+
+	n_batches := dl.BatchCount()
 
 	for epoch := 1; epoch <= epochs; epoch++ {
 		runningLoss := 0.0
 		runningAccuracy := 0.0
-		n_batches := dl.Size() / batchSize
 
-		for i := 0; i < n_batches; i++ {
-			input, output := dl.Sample(batchSize*i, batchSize)
+		dl.Reset()
+
+		for dl.Batch() {
+			input, output := dl.Data()
 
 			// 1. Forward
 			outputPred := m.Forward(input)
