@@ -6,20 +6,31 @@ import (
 	"os"
 
 	"github.com/arturobermejo/gobot/neunet"
+	"gonum.org/v1/gonum/mat"
 )
 
 func main() {
 	model := neunet.LoadModel("output")
-	inVocab := neunet.LoadVocab("output/invocab.model")
-	outVocab := neunet.LoadVocab("output/outvocab.model")
+	inVocab := neunet.LoadVocab("output/invocab.model", neunet.CleanText)
+	outVocab := neunet.LoadVocab("output/outvocab.model", nil)
 
 	fmt.Println("Hello!")
 	reader := bufio.NewReader(os.Stdin)
 	msg, _ := reader.ReadString('\n')
 
-	input := neunet.EncodeInputs([]string{msg}, inVocab, 3)
-	output := neunet.Softmax(model.Forward(input))
-	intent, prob := neunet.OutputDecode(output, outVocab)
+	input := mat.NewDense(1, inVocab.Size(), nil)
+	inVocab.OneHotEncode(msg, input, 0, 2)
+
+	var intent string
+	var prob float64
+
+	if mat.Sum(input) == 0 {
+		intent = ""
+		prob = 0
+	} else {
+		output := neunet.Softmax(model.Forward(input))
+		intent, prob = outVocab.OutputDecode(output)
+	}
 
 	fmt.Println(intent, prob)
 }
