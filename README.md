@@ -8,7 +8,7 @@ It is a 2-layer neural network (hidden and output), it uses **ReLU** for hidden 
 
 Text inputs are preprocessed removing non letter characters, removing diacritics, converting to lower case and finally encoding as one hot vectors. Spell correction is made using levenshtein distance.
 
-The optimization process is made with the **Adam** algorithm.
+The optimization process is made with the [Adam algorithm](https://arxiv.org/pdf/1412.6980.pdf).
 
 ## How to Train
 To train the model put the train data in the folder named `data`. The model params will be saved in `output` folder.
@@ -19,7 +19,7 @@ $ ./train.sh
 
 Results with the example data
 
-![Epoch: 200/200, loss: 0.1312, acc: 1.0000](docs/train_results.png "Train results")
+![Epoch: 200/200, loss: 0.0796, acc: 1.0000](docs/train_results.png "Train results")
 
 ## Run Example
 To run a web application demo using the model.
